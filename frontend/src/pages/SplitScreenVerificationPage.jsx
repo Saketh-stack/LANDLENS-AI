@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   CheckCircle2, XCircle, AlertTriangle, ArrowLeft, Edit3, 
@@ -46,7 +46,7 @@ const SplitScreenVerificationPage = () => {
   const fetchRecord = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/officer/record-detail/${id}`);
+      const res = await api.get(`/api/officer/record-detail/${id}`);
       setData(res.data);
 
       const fVals = {};
@@ -217,7 +217,7 @@ const SplitScreenVerificationPage = () => {
         }
       });
 
-      const res = await axios.post(`/api/officer/record/${id}/verify`, {
+      const res = await api.post(`/api/officer/record/${id}/verify`, {
         action: 'SAVE_CHANGES',
         remarks: remarks || 'User updated extracted details',
         corrections
@@ -258,7 +258,7 @@ const SplitScreenVerificationPage = () => {
       });
 
       try {
-        await axios.post(`/api/officer/record/${id}/verify`, {
+        await api.post(`/api/officer/record/${id}/verify`, {
           action: 'USER_VERIFIED',
           remarks: remarks || 'Confirmed and verified against original land document',
           corrections

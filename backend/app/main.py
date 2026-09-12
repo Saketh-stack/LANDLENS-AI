@@ -26,6 +26,10 @@ from backend.app.api.routes import (
     multilingual_router
 )
 
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 # Auto-create all SQLAlchemy database tables
 Base.metadata.create_all(bind=engine)
 
@@ -47,14 +51,57 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# CORS Middleware
+# Explicit CORS configuration
+allowed_origins = [
+    "https://landlens-ai-56a07.web.app",
+    "https://landlens-ai-56a07.firebaseapp.com",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+]
+custom_origins = os.getenv("ALLOWED_ORIGINS", "")
+if custom_origins:
+    allowed_origins.extend([o.strip() for o in custom_origins.split(",") if o.strip()])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins if os.getenv("STRICT_CORS") == "true" else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Strict JSON error handlers to prevent HTML error responses
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"status": "error", "error": exc.detail, "status_code": exc.status_code}
+    )
+
+@app.exception_handler(RequestValidationError)
+async def custom_validation_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=422,
+        content={"status": "error", "error": "Validation Error", "details": exc.errors()}
+    )
+
+@app.exception_handler(Exception)
+async def custom_generic_exception_handler(request, exc):
+    logger.error(f"Unhandled Server Error: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"status": "error", "error": "Internal Server Error", "detail": str(exc)}
+    )
+
+# Required Health Endpoint for Cloud Run / Monitoring
+@app.get("/health")
+def health():
+    return {
+        "status": "ok",
+        "service": "LANDLENS-AI backend"
+    }
 
 # Mount uploads static folder
 upload_dir = os.path.abspath(settings.UPLOAD_DIR)

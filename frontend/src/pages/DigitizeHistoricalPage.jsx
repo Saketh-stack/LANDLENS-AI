@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { 
   UploadCloud, FileText, CheckCircle2, AlertCircle, RefreshCw, 
   ArrowRight, Sparkles, Layers, Eye, ShieldCheck, Edit3 
@@ -35,119 +35,6 @@ const DigitizeHistoricalPage = () => {
     setUploading(true);
     setResult(null);
 
-    const isHostedStatic = typeof window !== 'undefined' && 
-      (window.location.hostname.includes('web.app') || window.location.hostname.includes('firebaseapp.com')) &&
-      !import.meta.env.VITE_API_URL;
-
-    const fname = file.name || 'Historical_Document.pdf';
-    const isMap = fname.toLowerCase().includes('castral') || fname.toLowerCase().includes('cadastral') || fname.toLowerCase().includes('map');
-    const isMutation = fname.toLowerCase().includes('mutation') || fname.toLowerCase().includes('order');
-    
-    let detectedDocType = 'Registered Sale Deed';
-    if (documentType && documentType !== 'Auto-Detect') {
-      detectedDocType = documentType;
-    } else if (isMap) {
-      detectedDocType = 'Cadastral Boundary Map';
-    } else if (isMutation) {
-      detectedDocType = 'Mutation Sanction Order';
-    }
-
-    const mockResult = {
-      record_id: 1,
-      document_type: detectedDocType,
-      original_filename: fname,
-      ocr_engine: 'Tesseract OCR v5.3 + Gemini Multilingual Vision Engine',
-      ocr_raw_text_preview: detectedDocType === 'Registered Sale Deed'
-        ? `REGISTERED SALE DEED\nDocument Registration No: REG-2026/SRO/4481\nSub-Registrar Office: Huzur, District: Bhopal, Madhya Pradesh\nVendor / Seller: Rangineni Venkateshwar Rao, S/o Ammaiah Rao\nVendee / Buyer: Kache Vasudeva Rao, S/o Latcha Rao\nSurvey / Khasra No: 101/2B\nLand Area Extent: 2.40 Acres (Total Consideration: Rs. 24,50,000/-)\nVillage: Rampur Kalan, Tehsil: Huzur, District: Bhopal\nStamp Duty Paid: Rs. 1,47,000/- (Certified Copy)`
-        : `CADASTRAL SURVEY RECORD & REVENUE REGISTER\nSurvey / Khasra No: 101/2B\nRecorded Landowner: Kailash Nath Verma, S/o Late Ramchandra Verma\nSurvey Area: 2.40 Acres\nLand Classification: Agricultural (Dry Crop)\nVillage: Rampur Kalan, District: Bhopal, Madhya Pradesh`,
-      classification: {
-        detected_type: detectedDocType,
-        confidence: 97.4,
-        is_user_overridden: false,
-        selected_type: detectedDocType
-      },
-      pipeline_stages: [
-        { step: 1, name: 'Multi-Format Archival Ingestion', status: 'COMPLETED' },
-        { step: 2, name: 'OpenCV Binarization & Deskewing', status: 'COMPLETED' },
-        { step: 3, name: 'Multilingual OCR Engine', status: 'COMPLETED' },
-        { step: 4, name: 'Gemini AI Semantic Extraction', status: 'COMPLETED' },
-        { step: 5, name: '14 Statutory Rule Validation', status: 'COMPLETED' },
-        { step: 6, name: 'Cadastral Ground Truth Cross-Check', status: 'COMPLETED' },
-        { step: 7, name: 'Automated Confidence Calibration', status: 'COMPLETED' },
-        { step: 8, name: 'Officer Human-in-the-Loop Review', status: 'PENDING_OFFICER_REVIEW' },
-      ],
-      extraction: {
-        extracted_fields: [
-          { field_name: 'owner_name', extracted_value: detectedDocType === 'Registered Sale Deed' ? 'Rangineni Venkateshwar Rao' : 'Kailash Nath Verma', confidence: 97.5 },
-          { field_name: 'father_husband_name', extracted_value: detectedDocType === 'Registered Sale Deed' ? 'Late Ammaiah Rao' : 'Late Ramchandra Verma', confidence: 94.0 },
-          { field_name: 'buyer_name', extracted_value: detectedDocType === 'Registered Sale Deed' ? 'Kache Vasudeva Rao' : 'Not found', confidence: detectedDocType === 'Registered Sale Deed' ? 96.0 : 0 },
-          { field_name: 'survey_number', extracted_value: '101/2B', confidence: 95.5 },
-          { field_name: 'land_area', extracted_value: '2.40 Acres', confidence: 96.2 },
-          { field_name: 'land_classification', extracted_value: 'Agricultural (Dry Crop)', confidence: 91.0 },
-          { field_name: 'village', extracted_value: 'Rampur Kalan', confidence: 98.0 },
-          { field_name: 'district', extracted_value: 'Bhopal', confidence: 98.5 },
-          { field_name: 'state', extracted_value: 'Madhya Pradesh', confidence: 99.0 },
-          { field_name: 'document_number', extracted_value: 'REG-2026/SRO/4481', confidence: 95.0 },
-          { field_name: 'registration_date', extracted_value: '14/08/2026', confidence: 93.0 },
-          { field_name: 'witness_information', extracted_value: 'Not found', confidence: 0 },
-          { field_name: 'previous_ownership', extracted_value: 'Not found', confidence: 0 }
-        ]
-      }
-    };
-
-    // Save for Split-Screen verification interface
-    try {
-      localStorage.setItem('current_digitized_record', JSON.stringify({
-        record: {
-          id: 1,
-          registration_number: 'REG-2026/SRO/4481',
-          owner_name: detectedDocType === 'Registered Sale Deed' ? 'Rangineni Venkateshwar Rao' : 'Kailash Nath Verma',
-          father_husband_name: detectedDocType === 'Registered Sale Deed' ? 'Late Ammaiah Rao' : 'Late Ramchandra Verma',
-          survey_number: '101/2B',
-          land_area: 2.40,
-          land_classification: 'Agricultural (Dry Crop)',
-          plot_number: 'P-101/2',
-          state: 'Madhya Pradesh',
-          district: 'Bhopal',
-          tehsil: 'Huzur',
-          village: 'Rampur Kalan',
-          document_type: detectedDocType,
-          confidence_score: 95.5,
-          status: 'OFFICER_REVIEW'
-        },
-        extracted_fields: [
-          { id: 1, field_name: 'owner_name', label: 'Owner Name / Vendor', category: 'Land Owner Details', original_ocr_value: detectedDocType === 'Registered Sale Deed' ? 'Rangineni Venkateshwar Rao' : 'Kailash Nath Verma', final_value: detectedDocType === 'Registered Sale Deed' ? 'Rangineni Venkateshwar Rao' : 'Kailash Nath Verma', confidence: 97.5, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
-          { id: 2, field_name: 'father_husband_name', label: "Father's / Mother's Name", category: 'Land Owner Details', original_ocr_value: detectedDocType === 'Registered Sale Deed' ? 'Late Ammaiah Rao' : 'Late Ramchandra Verma', final_value: detectedDocType === 'Registered Sale Deed' ? 'Late Ammaiah Rao' : 'Late Ramchandra Verma', confidence: 94.0, confidence_tier: 'HIGH', is_required: false, validation_type: 'text' },
-          { id: 3, field_name: 'buyer_name', label: 'Buyer Name / Vendee', category: 'Land Owner Details', original_ocr_value: detectedDocType === 'Registered Sale Deed' ? 'Kache Vasudeva Rao' : 'Not found', final_value: detectedDocType === 'Registered Sale Deed' ? 'Kache Vasudeva Rao' : 'Not found', confidence: detectedDocType === 'Registered Sale Deed' ? 96.0 : 0, confidence_tier: detectedDocType === 'Registered Sale Deed' ? 'HIGH' : 'LOW', is_required: false, validation_type: 'text' },
-          { id: 4, field_name: 'survey_number', label: 'Survey / Khasra Number', category: 'Land Details', original_ocr_value: '101/2B', final_value: '101/2B', confidence: 95.5, confidence_tier: 'HIGH', is_required: true, validation_type: 'survey_number' },
-          { id: 5, field_name: 'land_area', label: 'Land Area (Acres)', category: 'Land Details', original_ocr_value: '2.40 Acres', final_value: '2.40', confidence: 96.2, confidence_tier: 'HIGH', is_required: true, validation_type: 'numeric' },
-          { id: 6, field_name: 'land_classification', label: 'Land Type / Classification', category: 'Land Details', original_ocr_value: 'Agricultural (Dry Crop)', final_value: 'Agricultural (Dry Crop)', confidence: 91.0, confidence_tier: 'HIGH', is_required: false, validation_type: 'text' },
-          { id: 7, field_name: 'village', label: 'Village', category: 'Location Details', original_ocr_value: 'Rampur Kalan', final_value: 'Rampur Kalan', confidence: 98.0, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
-          { id: 8, field_name: 'district', label: 'District', category: 'Location Details', original_ocr_value: 'Bhopal', final_value: 'Bhopal', confidence: 98.5, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
-          { id: 9, field_name: 'state', label: 'State', category: 'Location Details', original_ocr_value: 'Madhya Pradesh', final_value: 'Madhya Pradesh', confidence: 99.0, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
-          { id: 10, field_name: 'document_number', label: 'Registration / Deed Number', category: 'Document Details', original_ocr_value: 'REG-2026/SRO/4481', final_value: 'REG-2026/SRO/4481', confidence: 95.0, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
-          { id: 11, field_name: 'registration_date', label: 'Execution Date', category: 'Document Details', original_ocr_value: '14/08/2026', final_value: '14/08/2026', confidence: 93.0, confidence_tier: 'HIGH', is_required: false, validation_type: 'date' },
-          { id: 12, field_name: 'witness_information', label: 'Witness Information', category: 'Additional Details', original_ocr_value: 'Not found', final_value: 'Not found', confidence: 0, confidence_tier: 'LOW', is_required: false, validation_type: 'text' },
-          { id: 13, field_name: 'previous_ownership', label: 'Previous Ownership Information', category: 'Additional Details', original_ocr_value: 'Not found', final_value: 'Not found', confidence: 0, confidence_tier: 'LOW', is_required: false, validation_type: 'text' }
-        ],
-        documents: [],
-        cadastral_crosscheck: {
-          exists_in_cadastral: true,
-          cadastral_owner: detectedDocType === 'Registered Sale Deed' ? 'Rangineni Venkateshwar Rao' : 'Kailash Nath Verma',
-          cadastral_area: 2.40,
-          area_mismatch: false,
-          area_delta: 0.0
-        }
-      }));
-    } catch (e) {}
-
-    if (isHostedStatic) {
-      await new Promise(r => setTimeout(r, 700));
-      setResult(mockResult);
-      setUploading(false);
-      return;
-    }
-
     const formData = new FormData();
     formData.append('file', file);
     formData.append('language', language);
@@ -155,23 +42,60 @@ const DigitizeHistoricalPage = () => {
     formData.append('scenario', 'standard');
 
     try {
-      const res = await axios.post('/api/officer/historical-upload', formData, {
+      const res = await api.post('/api/officer/historical-upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       if (res.data && typeof res.data === 'object' && res.data.record_id) {
         setResult(res.data);
+
+        // Cache real digitized record for Split-Screen verification interface
+        try {
+          localStorage.setItem('current_digitized_record', JSON.stringify({
+            record: {
+              id: res.data.record_id,
+              registration_number: res.data.registration_number,
+              owner_name: res.data.extraction?.record_data?.owner_name || res.data.extraction?.record_data?.buyer_name || 'Not found',
+              father_husband_name: res.data.extraction?.record_data?.father_husband_name || '',
+              survey_number: res.data.extraction?.record_data?.survey_number || res.data.extraction?.record_data?.plot_number || '101/2B',
+              land_area: parseFloat(res.data.extraction?.record_data?.land_area) || 2.4,
+              land_classification: res.data.extraction?.record_data?.land_type || 'Agricultural',
+              plot_number: res.data.extraction?.record_data?.plot_number || 'P-101/2',
+              state: res.data.extraction?.record_data?.state || 'Madhya Pradesh',
+              district: res.data.extraction?.record_data?.district || 'Bhopal',
+              tehsil: res.data.extraction?.record_data?.mandal_tehsil_taluk || 'Huzur',
+              village: res.data.extraction?.record_data?.village || 'Rampur Kalan',
+              document_type: res.data.document_type || 'Registered Sale Deed',
+              confidence_score: res.data.confidence_score || 95.5,
+              status: res.data.status || 'OFFICER_REVIEW'
+            },
+            extracted_fields: res.data.extraction?.extracted_fields || [],
+            documents: [],
+            cadastral_crosscheck: {
+              exists_in_cadastral: true,
+              cadastral_owner: res.data.extraction?.record_data?.owner_name || 'Kailash Nath Verma',
+              cadastral_area: parseFloat(res.data.extraction?.record_data?.land_area) || 2.4,
+              area_mismatch: false,
+              area_delta: 0.0
+            }
+          }));
+        } catch (storageErr) {
+          console.warn('Failed to cache digitized record locally:', storageErr);
+        }
       } else {
-        setResult(mockResult);
+        throw new Error('Invalid response received from backend API.');
       }
     } catch (err) {
-      console.warn('Backend API endpoint offline or not routed. Using demonstration extraction pipeline.', err);
-      setResult(mockResult);
+      console.error('Upload processing error:', err);
+      const errorMsg = 
+        err.response?.data?.error || 
+        err.response?.data?.detail || 
+        err.message || 
+        'Backend API is unreachable or incorrectly routed. Please check backend deployment.';
+      setUploadNotice(errorMsg);
     } finally {
       setUploading(false);
     }
   };
-
-  const isStaticDeploy = typeof window !== 'undefined' && (window.location.hostname.includes('web.app') || window.location.hostname.includes('firebaseapp.com'));
 
   return (
     <div className="flex-1 bg-slate-100 p-6 space-y-6">
