@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { 
@@ -15,9 +15,10 @@ const VerificationQueuePage = () => {
     setLoading(true);
     try {
       const res = await axios.get('/api/officer/verification-queue');
-      setQueue(res.data);
+      setQueue(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error(err);
+      setQueue([]);
     } finally {
       setLoading(false);
     }
@@ -27,7 +28,7 @@ const VerificationQueuePage = () => {
     fetchQueue();
   }, []);
 
-  const filtered = queue.filter(r => {
+  const filtered = (Array.isArray(queue) ? queue : []).filter(r => {
     if (filter === 'LOW_CONF') return r.status === 'LOW_CONFIDENCE';
     if (filter === 'VAL_ERR') return r.status === 'VALIDATION_FAILED';
     if (filter === 'REVIEW') return r.status === 'OFFICER_REVIEW';
@@ -44,7 +45,7 @@ const VerificationQueuePage = () => {
               Revenue Officer Verification Queue
             </span>
             <span className="text-xs font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
-              Pending Records: {queue.length}
+              Pending Records: {Array.isArray(queue) ? queue.length : 0}
             </span>
           </div>
           <h1 className="text-2xl font-black text-slate-900 mt-2">

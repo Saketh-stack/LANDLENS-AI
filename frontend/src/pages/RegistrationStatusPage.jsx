@@ -17,7 +17,7 @@ const RegistrationStatusPage = () => {
       const publicRes = await axios.get('/api/public/records', {
         params: { registration_number: searchRegNo.trim() }
       });
-      if (publicRes.data && publicRes.data.length > 0) {
+      if (Array.isArray(publicRes.data) && publicRes.data.length > 0) {
         setResult({
           isPublic: true,
           data: publicRes.data[0],

@@ -32,9 +32,10 @@ const PublicHomePage = () => {
       if (district) params.district = district;
 
       const res = await axios.get('/api/public/records', { params });
-      setRecords(res.data);
+      setRecords(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('Failed to search records', err);
+      setRecords([]);
     } finally {
       setLoading(false);
     }
@@ -43,7 +44,9 @@ const PublicHomePage = () => {
   const fetchStats = async () => {
     try {
       const res = await axios.get('/api/public/stats');
-      setStats(res.data);
+      if (res.data && typeof res.data === 'object' && !Array.isArray(res.data)) {
+        setStats(res.data);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -204,7 +207,7 @@ const PublicHomePage = () => {
             <div className="w-8 h-8 border-4 border-blue-900 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
             Searching verified records...
           </div>
-        ) : records.length === 0 ? (
+        ) : !Array.isArray(records) || records.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
             <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
             <h3 className="text-lg font-bold text-slate-800">No Approved Records Found</h3>
@@ -214,7 +217,7 @@ const PublicHomePage = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {records.map((rec) => (
+            {Array.isArray(records) && records.map((rec) => (
               <div
                 key={rec.id}
                 className="bg-white rounded-xl border border-slate-200 hover:border-blue-400 hover:shadow-lg transition-all p-5 flex flex-col justify-between"

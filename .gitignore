@@ -1,4 +1,4 @@
-﻿# Environment and secrets
+# Environment and secrets
 .env
 .env.*
 !.env.example
@@ -38,3 +38,7 @@ Thumbs.db
 # Private keys
 *.pem
 *.key
+
+# Firebase cache
+.firebase/
+

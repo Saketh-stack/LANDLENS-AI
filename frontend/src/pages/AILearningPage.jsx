@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
   Sparkles, TrendingUp, RefreshCw, CheckCircle2, 
@@ -24,7 +24,7 @@ const AILearningPage = () => {
     fetchMetrics();
   }, []);
 
-  if (loading || !metrics) {
+  if (loading || !metrics || typeof metrics !== 'object' || Array.isArray(metrics)) {
     return (
       <div className="flex-1 p-8 text-center text-slate-500">
         <div className="w-8 h-8 border-4 border-blue-900 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>

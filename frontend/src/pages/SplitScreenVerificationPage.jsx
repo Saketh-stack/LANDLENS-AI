@@ -238,12 +238,12 @@ const SplitScreenVerificationPage = () => {
     );
   }
 
-  if (error || !data) {
+  if (error || !data || typeof data !== 'object' || !data.record) {
     return (
       <div className="flex-1 p-8 text-center text-rose-600">
         <AlertTriangle className="w-12 h-12 mx-auto mb-2 text-rose-500" />
         <h3 className="font-bold text-lg">Unable to Load Record</h3>
-        <p className="text-xs text-slate-600 mt-1">{error}</p>
+        <p className="text-xs text-slate-600 mt-1">{error || 'Record data is missing or invalid'}</p>
         <button
           onClick={() => navigate('/officer/verification-queue')}
           className="mt-4 px-4 py-2 bg-blue-900 text-white rounded-lg text-xs font-bold"

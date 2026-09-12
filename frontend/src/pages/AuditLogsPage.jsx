@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ShieldCheck, Clock, User, Filter, RefreshCw } from 'lucide-react';
 
@@ -10,9 +10,10 @@ const AuditLogsPage = () => {
     setLoading(true);
     try {
       const res = await axios.get('/api/officer/audit-logs');
-      setLogs(res.data);
+      setLogs(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error(err);
+      setLogs([]);
     } finally {
       setLoading(false);
     }
@@ -72,7 +73,7 @@ const AuditLogsPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {logs.map((l) => (
+                {Array.isArray(logs) && logs.map((l) => (
                   <tr key={l.id} className="hover:bg-slate-50">
                     <td className="py-3 px-3 font-mono text-slate-500 whitespace-nowrap">{l.timestamp}</td>
                     <td className="py-3 px-3 font-bold text-slate-900">{l.actor}</td>

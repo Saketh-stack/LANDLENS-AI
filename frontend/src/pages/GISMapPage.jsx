@@ -17,9 +17,10 @@ const GISMapPage = () => {
   const fetchParcels = async () => {
     try {
       const res = await axios.get('/api/gis/parcels');
-      setParcels(res.data.features || []);
+      setParcels(Array.isArray(res.data?.features) ? res.data.features : []);
     } catch (err) {
       console.error(err);
+      setParcels([]);
     } finally {
       setLoading(false);
     }
