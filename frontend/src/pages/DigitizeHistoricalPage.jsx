@@ -45,12 +45,19 @@ const DigitizeHistoricalPage = () => {
       setResult(res.data);
     } catch (err) {
       console.error('Upload processing error:', err);
-      const msg = err.response?.data?.detail || err.message || 'Upload processing encountered an issue';
-      alert(`Upload error: ${msg}`);
+      const isStaticDeploy = window.location.hostname.includes('web.app') || window.location.hostname.includes('firebaseapp.com');
+      if (isStaticDeploy) {
+        alert('Notice: Firebase Hosting hosts the frontend user interface. The genuine Python AI & OCR extraction pipeline runs on your local machine at http://localhost:5173. Please open http://localhost:5173 to digitize documents with your active backend engine.');
+      } else {
+        const msg = err.response?.data?.detail || err.message || 'Upload processing encountered an issue';
+        alert(`Upload error: ${msg}`);
+      }
     } finally {
       setUploading(false);
     }
   };
+
+  const isStaticDeploy = typeof window !== 'undefined' && (window.location.hostname.includes('web.app') || window.location.hostname.includes('firebaseapp.com'));
 
   return (
     <div className="flex-1 bg-slate-100 p-6 space-y-6">
@@ -71,6 +78,23 @@ const DigitizeHistoricalPage = () => {
           Upload handwritten land registers, scanned deeds, or historical PDFs in English and Indian languages (Hindi, Telugu, Tamil, Marathi).
         </p>
       </div>
+
+      {/* Static hosting notice banner */}
+      {isStaticDeploy && (
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3">
+          <Sparkles className="w-5 h-5 text-blue-700 shrink-0 mt-0.5" />
+          <div className="text-xs text-blue-900 space-y-1">
+            <p className="font-bold">Live AI & OCR Processing Notice</p>
+            <p className="text-blue-800 leading-relaxed">
+              Firebase Hosting provides the cloud web interface. To run live document OCR, OpenCV image preprocessing, and Gemini AI extraction against your local database, open{' '}
+              <a href="http://localhost:5173/officer/digitize-historical" className="underline font-bold hover:text-blue-950">
+                http://localhost:5173/officer/digitize-historical
+              </a>{' '}
+              where your Python FastAPI server handles file uploads directly.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Upload Form (Left Column) */}
