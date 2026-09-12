@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ShieldCheck, Lock, User, AlertCircle, Sparkles } from 'lucide-react';
@@ -17,7 +17,7 @@ const LoginPage = () => {
     setLoading(true);
     try {
       const user = await login(username, password);
-      if (user.role === 'OFFICER' || user.role === 'ADMIN') {
+      if (user.role === 'OFFICER' || user.role === 'ADMIN' || user.role === 'LAND_RECORD_OFFICER') {
         navigate('/officer/dashboard');
       } else {
         navigate('/');
