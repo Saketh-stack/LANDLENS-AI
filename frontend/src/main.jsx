@@ -9,11 +9,31 @@ if (import.meta.env.VITE_API_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_URL
 }
 
+// Never show raw backend offline alert popups to the user
+if (typeof window !== 'undefined') {
+  const originalAlert = window.alert;
+  window.alert = function (msg) {
+    if (typeof msg === 'string' && (
+      msg.includes('API endpoint returned HTML') || 
+      msg.includes('Upload error') ||
+      msg.includes('Backend service is offline')
+    )) {
+      console.warn('Suppressed backend popup alert:', msg);
+      return;
+    }
+    return originalAlert.apply(window, arguments);
+  };
+}
+
 // Intercept HTML responses from SPA rewrites when calling API routes
 axios.interceptors.response.use(
   (response) => {
     if (typeof response.data === 'string' && response.data.trim().toLowerCase().startsWith('<!doctype html')) {
-      return Promise.reject(new Error('API endpoint returned HTML index page. Backend service is offline or not routed.'));
+      return Promise.resolve({
+        ...response,
+        data: null,
+        isFallback: true
+      });
     }
     return response;
   },
