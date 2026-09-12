@@ -15,19 +15,23 @@ const DigitizeHistoricalPage = () => {
   const [result, setResult] = useState(null);
   const navigate = useNavigate();
 
+  const [uploadNotice, setUploadNotice] = useState(null);
+
   const handleFileDrop = (e) => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       setFile(e.dataTransfer.files[0]);
+      setUploadNotice(null);
     }
   };
 
   const handleProcessUpload = async (e) => {
     e.preventDefault();
     if (!file) {
-      alert('Please select or drag an actual land document (PDF, JPG, PNG) to upload.');
+      setUploadNotice('Please select or drag an actual land document (PDF, JPG, PNG) to upload.');
       return;
     }
+    setUploadNotice(null);
     setUploading(true);
     setResult(null);
 
@@ -276,6 +280,13 @@ const DigitizeHistoricalPage = () => {
               </select>
             </div>
 
+
+            {uploadNotice && (
+              <div className="p-3 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-900 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>{uploadNotice}</span>
+              </div>
+            )}
 
             <button
               type="submit"

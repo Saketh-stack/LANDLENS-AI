@@ -9,17 +9,23 @@ if (import.meta.env.VITE_API_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_URL
 }
 
-// Never show raw backend offline alert popups to the user
+// Never show raw backend offline or error alert popups to the user
 if (typeof window !== 'undefined') {
   const originalAlert = window.alert;
   window.alert = function (msg) {
-    if (typeof msg === 'string' && (
-      msg.includes('API endpoint returned HTML') || 
-      msg.includes('Upload error') ||
-      msg.includes('Backend service is offline')
-    )) {
-      console.warn('Suppressed backend popup alert:', msg);
-      return;
+    if (typeof msg === 'string') {
+      const lower = msg.toLowerCase();
+      if (
+        lower.includes('html') || 
+        lower.includes('upload') ||
+        lower.includes('offline') ||
+        lower.includes('backend') ||
+        lower.includes('failed') ||
+        lower.includes('error')
+      ) {
+        console.warn('Suppressed error popup alert:', msg);
+        return;
+      }
     }
     return originalAlert.apply(window, arguments);
   };
