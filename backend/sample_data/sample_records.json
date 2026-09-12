@@ -1,0 +1,122 @@
+[
+  {
+    "owner_name": "Ravi Kumar",
+    "father_husband_name": "Anand Kumar",
+    "survey_number": "123/4A",
+    "khasra_number": "KHA-4587",
+    "khata_number": "KH-10234",
+    "plot_number": "PLOT-89/B",
+    "village": "Rampur Kalan",
+    "tehsil": "Huzur",
+    "district": "Bhopal",
+    "state": "Madhya Pradesh",
+    "land_area": 2.45,
+    "land_classification": "Agricultural",
+    "registration_number": "REG2026/00125",
+    "registration_date": "01-09-2026",
+    "status": "APPROVED",
+    "document_status": "Digitized and Verified",
+    "is_public": true,
+    "confidence_score": 96.5,
+    "coordinates_geojson": {
+      "type": "Polygon",
+      "coordinates": [[[77.4126, 23.2599], [77.415, 23.2599], [77.415, 23.2575], [77.4126, 23.2575], [77.4126, 23.2599]]]
+    }
+  },
+  {
+    "owner_name": "Suresh Kumar Patel",
+    "father_husband_name": "Dinesh Patel",
+    "survey_number": "101/2B",
+    "khasra_number": "KHA-1092",
+    "khata_number": "KH-5541",
+    "plot_number": "PLOT-12",
+    "village": "Rampur Kalan",
+    "tehsil": "Huzur",
+    "district": "Bhopal",
+    "state": "Madhya Pradesh",
+    "land_area": 1.80,
+    "land_classification": "Agricultural",
+    "registration_number": "REG2026/00124",
+    "registration_date": "01-09-2026",
+    "status": "APPROVED",
+    "document_status": "Digitized and Verified",
+    "is_public": true,
+    "confidence_score": 95.0,
+    "coordinates_geojson": {
+      "type": "Polygon",
+      "coordinates": [[[77.416, 23.261], [77.4185, 23.261], [77.4185, 23.2585], [77.416, 23.2585], [77.416, 23.261]]]
+    }
+  },
+  {
+    "owner_name": "Lakshmi Devi Rao",
+    "father_husband_name": "K. Venkatesh Rao",
+    "survey_number": "105/3C",
+    "khasra_number": "KHA-7731",
+    "khata_number": "KH-8820",
+    "plot_number": "SECTOR-4/G-12",
+    "village": "Sanwer Dehat",
+    "tehsil": "Sanwer",
+    "district": "Indore",
+    "state": "Madhya Pradesh",
+    "land_area": 0.35,
+    "land_classification": "Residential",
+    "registration_number": "REG2026/00098",
+    "registration_date": "15-08-2026",
+    "status": "APPROVED",
+    "document_status": "Digitized and Verified",
+    "is_public": true,
+    "confidence_score": 98.0,
+    "coordinates_geojson": {
+      "type": "Polygon",
+      "coordinates": [[[75.8577, 22.7196], [75.86, 22.7196], [75.86, 22.717], [75.8577, 22.717], [75.8577, 22.7196]]]
+    }
+  },
+  {
+    "owner_name": "Priya Sharma",
+    "father_husband_name": "Rajesh Sharma",
+    "survey_number": "214/1",
+    "khasra_number": "KHA-3310",
+    "khata_number": "KH-9912",
+    "plot_number": "COMM-ZONE-09",
+    "village": "Berasia Khurd",
+    "tehsil": "Berasia",
+    "district": "Bhopal",
+    "state": "Madhya Pradesh",
+    "land_area": 1.15,
+    "land_classification": "Commercial",
+    "registration_number": "REG2026/00045",
+    "registration_date": "20-07-2026",
+    "status": "APPROVED",
+    "document_status": "Digitized and Verified",
+    "is_public": true,
+    "confidence_score": 93.5,
+    "coordinates_geojson": {
+      "type": "Polygon",
+      "coordinates": [[[77.42, 23.27], [77.423, 23.27], [77.423, 23.267], [77.42, 23.267], [77.42, 23.27]]]
+    }
+  },
+  {
+    "owner_name": "K. Chandra Shekhar",
+    "father_husband_name": "K. Rama Rao",
+    "survey_number": "78/A",
+    "khasra_number": "KHA-9014",
+    "khata_number": "KH-2231",
+    "plot_number": "PLOT-7",
+    "village": "Shamshabad Rural",
+    "tehsil": "Shamshabad",
+    "district": "Ranga Reddy",
+    "state": "Telangana",
+    "land_area": 0.95,
+    "land_classification": "Agricultural",
+    "registration_number": "REG2026/00018",
+    "registration_date": "10-06-2026",
+    "status": "APPROVED",
+    "document_status": "Digitized and Verified",
+    "is_public": true,
+    "confidence_score": 97.2,
+    "coordinates_geojson": {
+      "type": "Polygon",
+      "coordinates": [[[78.435, 17.26], [78.4375, 17.26], [78.4375, 17.2575], [78.435, 17.2575], [78.435, 17.26]]]
+    }
+  }
+]

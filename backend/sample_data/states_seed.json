@@ -1,0 +1,112 @@
+[
+  {
+    "name": "Andhra Pradesh",
+    "code": "AP",
+    "capital": "Amaravati",
+    "region": "South",
+    "survey_label": "Survey Number",
+    "admin_unit_label": "Mandal",
+    "default_area_unit": "Acres",
+    "language_code": "te"
+  },
+  {
+    "name": "Telangana",
+    "code": "TG",
+    "capital": "Hyderabad",
+    "region": "South",
+    "survey_label": "Survey Number",
+    "admin_unit_label": "Mandal",
+    "default_area_unit": "Acres",
+    "language_code": "te"
+  },
+  {
+    "name": "Karnataka",
+    "code": "KA",
+    "capital": "Bengaluru",
+    "region": "South",
+    "survey_label": "Survey Number / Hissa",
+    "admin_unit_label": "Taluk",
+    "default_area_unit": "Acres",
+    "language_code": "kn"
+  },
+  {
+    "name": "Tamil Nadu",
+    "code": "TN",
+    "capital": "Chennai",
+    "region": "South",
+    "survey_label": "Survey Number",
+    "admin_unit_label": "Taluk",
+    "default_area_unit": "Acres",
+    "language_code": "ta"
+  },
+  {
+    "name": "Maharashtra",
+    "code": "MH",
+    "capital": "Mumbai",
+    "region": "West",
+    "survey_label": "Survey No / Gut No",
+    "admin_unit_label": "Taluka",
+    "default_area_unit": "Hectares",
+    "language_code": "mr"
+  },
+  {
+    "name": "Delhi",
+    "code": "DL",
+    "capital": "New Delhi",
+    "region": "North",
+    "survey_label": "Khasra Number",
+    "admin_unit_label": "Tehsil",
+    "default_area_unit": "Bigha",
+    "language_code": "hi"
+  },
+  {
+    "name": "Uttar Pradesh",
+    "code": "UP",
+    "capital": "Lucknow",
+    "region": "North",
+    "survey_label": "Khasra / Gata Number",
+    "admin_unit_label": "Tehsil",
+    "default_area_unit": "Hectares",
+    "language_code": "hi"
+  },
+  {
+    "name": "Madhya Pradesh",
+    "code": "MP",
+    "capital": "Bhopal",
+    "region": "Central",
+    "survey_label": "Khasra Number",
+    "admin_unit_label": "Tehsil",
+    "default_area_unit": "Acres",
+    "language_code": "hi"
+  },
+  {
+    "name": "Kerala",
+    "code": "KL",
+    "capital": "Thiruvananthapuram",
+    "region": "South",
+    "survey_label": "Resurvey Number",
+    "admin_unit_label": "Taluk",
+    "default_area_unit": "Hectares",
+    "language_code": "ml"
+  },
+  {
+    "name": "West Bengal",
+    "code": "WB",
+    "capital": "Kolkata",
+    "region": "East",
+    "survey_label": "Dag Number",
+    "admin_unit_label": "Block",
+    "default_area_unit": "Acres",
+    "language_code": "bn"
+  },
+  {
+    "name": "Gujarat",
+    "code": "GJ",
+    "capital": "Gandhinagar",
+    "region": "West",
+    "survey_label": "Survey Number",
+    "admin_unit_label": "Taluka",
+    "default_area_unit": "Hectares",
+    "language_code": "gu"
+  }
+]

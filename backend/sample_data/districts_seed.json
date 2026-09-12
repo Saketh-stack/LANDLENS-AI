@@ -1,0 +1,42 @@
+[
+  {
+    "state_code": "MP",
+    "district_name": "Bhopal",
+    "admin_units": ["Huzur", "Berasia"]
+  },
+  {
+    "state_code": "MP",
+    "district_name": "Indore",
+    "admin_units": ["Sanwer", "Depalpur", "Mhow"]
+  },
+  {
+    "state_code": "TG",
+    "district_name": "Ranga Reddy",
+    "admin_units": ["Shamshabad", "Rajendranagar", "Ibrahimpatnam"]
+  },
+  {
+    "state_code": "UP",
+    "district_name": "Lucknow",
+    "admin_units": ["Bakshi Ka Talab", "Mohanlalganj", "Sadar"]
+  },
+  {
+    "state_code": "MH",
+    "district_name": "Pune",
+    "admin_units": ["Haveli", "Mulshi", "Baramati"]
+  },
+  {
+    "state_code": "KA",
+    "district_name": "Bengaluru Rural",
+    "admin_units": ["Devanahalli", "Doddaballapura"]
+  },
+  {
+    "state_code": "TN",
+    "district_name": "Kanchipuram",
+    "admin_units": ["Sriperumbudur", "Walajabad"]
+  },
+  {
+    "state_code": "GJ",
+    "district_name": "Ahmedabad",
+    "admin_units": ["Daskroi", "Sanand"]
+  }
+]
