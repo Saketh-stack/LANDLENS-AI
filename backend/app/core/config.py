@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = None
     OPENAI_MODEL: str = 'gpt-5.0'
     GEMINI_API_KEY: Optional[str] = None
+    OPENROUTER_API_KEY: Optional[str] = None
+    OPENROUTER_MODEL: str = 'openai/gpt-5.6-sol'
+    OPENROUTER_BASE_URL: str = 'https://openrouter.ai/api/v1'
 
     # Spatial GIS & Google Maps
     GOOGLE_MAPS_API_KEY: Optional[str] = None
@@ -50,6 +53,10 @@ class Settings(BaseSettings):
     )
 
     @property
+    def is_openrouter_enabled(self) -> bool:
+        return bool(self.OPENROUTER_API_KEY and self.OPENROUTER_API_KEY.strip() and not self.OPENROUTER_API_KEY.startswith("your_") and "<OPENROUTER" not in self.OPENROUTER_API_KEY)
+
+    @property
     def is_openai_enabled(self) -> bool:
         return bool(self.OPENAI_API_KEY and self.OPENAI_API_KEY.strip() and not self.OPENAI_API_KEY.startswith("your_"))
 
@@ -59,7 +66,7 @@ class Settings(BaseSettings):
 
     @property
     def is_llm_enabled(self) -> bool:
-        return self.is_openai_enabled or self.is_gemini_enabled
+        return self.is_openrouter_enabled or self.is_openai_enabled or self.is_gemini_enabled
 
     @property
     def is_google_maps_enabled(self) -> bool:

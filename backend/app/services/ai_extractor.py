@@ -44,7 +44,45 @@ class AIExtractorService:
             f"Document text:\n\"\"\"{raw_text[:4000]}\"\"\""
         )
 
-        # 1. Try OpenAI if enabled
+        # 1. Try OpenRouter if enabled (highest accuracy with gpt-5.6-sol / specified model)
+        if settings.is_openrouter_enabled:
+            try:
+                headers = {
+                    "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
+                    "HTTP-Referer": "https://sih26018-smart-land-records.gov.in",
+                    "X-Title": "SIH Smart Land Records Digitization",
+                    "Content-Type": "application/json"
+                }
+                payload = {
+                    "model": settings.OPENROUTER_MODEL,
+                    "messages": [
+                        {"role": "system", "content": "You are a precise land records extraction parser. Return ONLY valid JSON matching the requested keys."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    "response_format": {"type": "json_object"},
+                    "max_tokens": 1500
+                }
+                resp = httpx.post(f"{settings.OPENROUTER_BASE_URL}/chat/completions", headers=headers, json=payload, timeout=45.0)
+                if resp.status_code == 400 and ("response_format" in resp.text or "unsupported" in resp.text.lower()):
+                    payload.pop("response_format", None)
+                    resp = httpx.post(f"{settings.OPENROUTER_BASE_URL}/chat/completions", headers=headers, json=payload, timeout=45.0)
+                if resp.status_code == 200:
+                    content = resp.json()["choices"][0]["message"]["content"]
+                    clean_json = re.sub(r'^```(?:json)?\s*', '', content.strip())
+                    clean_json = re.sub(r'\s*```$', '', clean_json.strip())
+                    if "{" in clean_json and "}" in clean_json:
+                        s_idx = clean_json.find("{")
+                        e_idx = clean_json.rfind("}") + 1
+                        clean_json = clean_json[s_idx:e_idx]
+                    parsed = json.loads(clean_json)
+                    logger.info(f"Successfully extracted structured fields via OpenRouter ({settings.OPENROUTER_MODEL})")
+                    return parsed
+                else:
+                    logger.warning(f"OpenRouter returned status {resp.status_code}: {resp.text}")
+            except Exception as e:
+                logger.warning(f"OpenRouter extraction call failed: {e}")
+
+        # 2. Try OpenAI if enabled
         if settings.is_openai_enabled:
             try:
                 headers = {

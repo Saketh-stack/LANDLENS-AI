@@ -42,9 +42,10 @@ class DocumentService:
 
         file_hash = compute_file_sha256(dest_path)
 
-        # Run OCR extraction
-        ocr_engine = OCRService()
-        ocr_res = ocr_engine.process_image(dest_path)
+        # Run Multilingual OCR extraction
+        from backend.app.ai.multilingual.ocr_service import MultilingualOCRService
+        ocr_engine = MultilingualOCRService()
+        ocr_res = ocr_engine.process_document(dest_path)
 
         doc = Document(
             land_record_id=land_record_id,

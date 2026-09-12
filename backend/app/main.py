@@ -22,7 +22,8 @@ from backend.app.api.routes import (
     mock_registration_router,
     public_router,
     officer_compat_router,
-    demo_compat_router
+    demo_compat_router,
+    multilingual_router
 )
 
 # Auto-create all SQLAlchemy database tables
@@ -79,6 +80,7 @@ app.include_router(public_router)
 # Compatibility Routers for existing Frontend UI
 app.include_router(officer_compat_router)
 app.include_router(demo_compat_router)
+app.include_router(multilingual_router)
 
 @app.get("/")
 def root():

@@ -1,10 +1,12 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, Search, FileText, Map, Clock, LogIn, LogOut, UserCheck, Activity, Database, CheckCircle2 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { ShieldCheck, Search, FileText, Map, Clock, LogIn, LogOut, UserCheck, Activity, Database, CheckCircle2, Languages } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout, isOfficer } = useAuth();
+  const { currentLang, changeLanguage, supportedLanguages, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,22 +27,22 @@ const Navbar = () => {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs uppercase tracking-widest text-slate-500 font-semibold">
-                Ministry of Rural Development • Gov of India
+                {t('ministry_sub')}
               </span>
               <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-emerald-300">
                 SIH26018
               </span>
             </div>
             <h1 className="text-xl font-black text-slate-900 tracking-tight leading-tight group-hover:text-blue-900 transition-colors">
-              Digital Land Records Portal
+              {t('portal_title')}
             </h1>
             <p className="text-xs text-slate-500 hidden sm:block">
-              Intelligent AI/OCR Land Record Digitization and Validation Platform
+              Intelligent Multilingual AI/OCR Land Record Digitization Platform
             </p>
           </div>
         </Link>
 
-        {/* Navigation Links */}
+        {/* Navigation Links & Language Selector */}
         <nav className="flex items-center flex-wrap gap-1 md:gap-2 text-sm font-medium">
           <Link
             to="/"
@@ -49,7 +51,7 @@ const Navbar = () => {
             }`}
           >
             <Search className="w-4 h-4 text-blue-600" />
-            Search Records
+            {t('search_records')}
           </Link>
 
           <Link
@@ -59,7 +61,7 @@ const Navbar = () => {
             }`}
           >
             <Clock className="w-4 h-4 text-emerald-600" />
-            Registration Status
+            {t('registration_status')}
           </Link>
 
           <Link
@@ -69,8 +71,25 @@ const Navbar = () => {
             }`}
           >
             <Map className="w-4 h-4 text-amber-600" />
-            Cadastral GIS Map
+            {t('cadastral_gis')}
           </Link>
+
+          {/* 13 Indian Language Selector Dropdown */}
+          <div className="relative inline-flex items-center ml-1 border border-slate-300 rounded-lg px-2 py-1 bg-slate-50 hover:bg-white transition-all shadow-xs">
+            <Languages className="w-4 h-4 text-blue-700 mr-1.5 shrink-0" />
+            <select
+              value={currentLang}
+              onChange={(e) => changeLanguage(e.target.value)}
+              className="bg-transparent text-xs font-semibold text-slate-800 outline-none cursor-pointer pr-1"
+              title="Select Indian Language"
+            >
+              {supportedLanguages.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.nativeName} ({lang.name})
+                </option>
+              ))}
+            </select>
+          </div>
 
           {/* Officer Workspace Switcher */}
           {isOfficer ? (
@@ -82,7 +101,7 @@ const Navbar = () => {
                 }`}
               >
                 <ShieldCheck className="w-4 h-4 text-amber-700" />
-                Officer Workspace
+                {t('officer_workspace')}
               </Link>
               <button
                 onClick={() => { logout(); navigate('/'); }}
@@ -98,7 +117,7 @@ const Navbar = () => {
               className="ml-2 px-3.5 py-1.5 rounded-lg bg-blue-900 hover:bg-blue-800 text-white font-semibold transition-all shadow-sm flex items-center gap-1.5"
             >
               <LogIn className="w-4 h-4 text-amber-400" />
-              Officer Login
+              {t('login')}
             </Link>
           )}
         </nav>
@@ -123,6 +142,9 @@ const Navbar = () => {
               <Link to="/officer/digitize-historical" className={`hover:text-amber-400 ${isActive('/officer/digitize-historical') ? 'text-amber-400 font-bold' : ''}`}>
                 Digitize Historical Record
               </Link>
+              <Link to="/officer/cross-verification" className={`hover:text-amber-400 ${isActive('/officer/cross-verification') ? 'text-amber-400 font-bold' : ''}`}>
+                Cross-Doc Verification
+              </Link>
               <Link to="/officer/verification-queue" className={`hover:text-amber-400 ${isActive('/officer/verification-queue') ? 'text-amber-400 font-bold' : ''}`}>
                 Verification Queue
               </Link>
@@ -132,6 +154,7 @@ const Navbar = () => {
               <Link to="/officer/audit-logs" className={`hover:text-amber-400 ${isActive('/officer/audit-logs') ? 'text-amber-400 font-bold' : ''}`}>
                 Audit Trail
               </Link>
+
             </div>
             <div className="text-slate-400 italic">
               Proposed Prototype Target: Public Viewing in 2-3 Days

@@ -13,6 +13,7 @@ from backend.app.api.routes.admin import router as admin_router
 from backend.app.api.routes.mock_registration import router as mock_registration_router
 from backend.app.api.routes.public import router as public_router
 from backend.app.api.routes.compat import officer_compat_router, demo_compat_router
+from backend.app.api.routes.multilingual import router as multilingual_router
 
 __all__ = [
     "auth_router",
@@ -30,5 +31,6 @@ __all__ = [
     "mock_registration_router",
     "public_router",
     "officer_compat_router",
-    "demo_compat_router"
+    "demo_compat_router",
+    "multilingual_router"
 ]

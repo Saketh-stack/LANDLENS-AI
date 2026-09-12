@@ -1,6 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
 
 import Navbar from './components/Navbar';
 import DemoToolbar from './components/DemoToolbar';
@@ -15,6 +16,10 @@ import AILearningPage from './pages/AILearningPage';
 import AuditLogsPage from './pages/AuditLogsPage';
 import GISMapPage from './pages/GISMapPage';
 import RegistrationStatusPage from './pages/RegistrationStatusPage';
+import CrossDocumentVerificationPage from './pages/CrossDocumentVerificationPage';
+
+
+
 
 // Protected Route wrapper for Government Officer roles
 const ProtectedOfficerRoute = ({ children }) => {
@@ -28,13 +33,14 @@ const ProtectedOfficerRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900">
-          {/* Judge Demo Preset Bar */}
-          <DemoToolbar />
+      <LanguageProvider>
+        <BrowserRouter>
+          <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900">
+            {/* Judge Demo Preset Bar */}
+            <DemoToolbar />
 
-          {/* Official Government Navbar */}
-          <Navbar />
+            {/* Official Government Navbar */}
+            <Navbar />
 
           {/* Main Application Routes */}
           <main className="flex-1 flex flex-col">
@@ -102,6 +108,15 @@ function App() {
                   </ProtectedOfficerRoute>
                 }
               />
+              <Route
+                path="/officer/cross-verification"
+                element={
+                  <ProtectedOfficerRoute>
+                    <CrossDocumentVerificationPage />
+                  </ProtectedOfficerRoute>
+                }
+              />
+
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
@@ -124,6 +139,7 @@ function App() {
           </footer>
         </div>
       </BrowserRouter>
+      </LanguageProvider>
     </AuthProvider>
   );
 }

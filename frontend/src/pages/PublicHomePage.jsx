@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Search, MapPin, FileCheck, Filter, AlertCircle, ChevronRight, Eye, Sparkles, Building2, CheckCircle, ShieldCheck } from 'lucide-react';
 import RecordDetailsModal from '../components/RecordDetailsModal';
+import VoiceSearchInput from '../components/VoiceSearchInput';
+import { useLanguage } from '../context/LanguageContext';
 
 const PublicHomePage = () => {
+  const { t, currentLang } = useLanguage();
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -17,11 +20,12 @@ const PublicHomePage = () => {
   const [district, setDistrict] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  const fetchRecords = async () => {
+  const fetchRecords = async (overrideTerm = null) => {
     setLoading(true);
     try {
+      const qVal = overrideTerm !== null ? overrideTerm : searchTerm;
       const params = {};
-      if (searchTerm) params.q = searchTerm;
+      if (qVal) params.q = qVal;
       if (ownerName) params.owner_name = ownerName;
       if (surveyNumber) params.survey_number = surveyNumber;
       if (village) params.village = village;
@@ -55,6 +59,11 @@ const PublicHomePage = () => {
     fetchRecords();
   };
 
+  const handleVoiceInput = (text) => {
+    setSearchTerm(text);
+    fetchRecords(text);
+  };
+
   return (
     <div className="flex-1 bg-slate-50 min-h-screen">
       {/* Hero Banner with Official Government Theme */}
@@ -63,35 +72,38 @@ const PublicHomePage = () => {
         <div className="max-w-7xl mx-auto relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-800/80 border border-blue-600/50 text-blue-200 text-xs font-semibold uppercase tracking-wider mb-4">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            Ministry of Rural Development • Department of Land Resources (DoLR)
+            {t('ministry_sub')}
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-3">
-            Digital Land Records Portal
+            {t('hero_headline')}
           </h1>
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-8 font-light">
-            AI-Powered Land Record Digitization and Validation System. Search, verify, and view official Record of Rights (RoR) certified across India.
+            {t('hero_sub')}
           </p>
 
           {/* Search Box */}
           <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl p-4 text-slate-900 border border-slate-200">
             <form onSubmit={handleSearchSubmit} className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-2">
-                <div className="relative flex-1">
-                  <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
+                <div className="relative flex-1 flex items-center">
+                  <Search className="w-5 h-5 text-slate-400 absolute left-3.5" />
                   <input
                     type="text"
-                    placeholder="Search by Owner Name, Survey Number, Khasra, Khata, or Village..."
+                    placeholder={t('search_placeholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600 font-medium"
+                    className="w-full pl-11 pr-12 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600 font-medium text-sm"
                   />
+                  <div className="absolute right-2">
+                    <VoiceSearchInput onVoiceInput={handleVoiceInput} />
+                  </div>
                 </div>
                 <button
                   type="submit"
                   className="px-8 py-3 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-xl transition-colors shadow-md flex items-center justify-center gap-2 shrink-0"
                 >
                   <Search className="w-4 h-4" />
-                  Search Records
+                  {t('search_btn')}
                 </button>
               </div>
 
@@ -103,7 +115,7 @@ const PublicHomePage = () => {
                   className="font-semibold text-blue-900 hover:underline flex items-center gap-1"
                 >
                   <Filter className="w-3.5 h-3.5" />
-                  {showAdvanced ? 'Hide Detailed Parameters' : 'Filter by Khasra, Khata, Village, District'}
+                  {showAdvanced ? 'Hide Detailed Parameters' : t('advanced_filters')}
                 </button>
                 <span className="text-slate-400 italic">
                   Showing only APPROVED & verified public records

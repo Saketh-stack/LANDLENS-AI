@@ -14,40 +14,13 @@ class ExtractionService:
     """
     @classmethod
     async def extract_fields_from_text(cls, raw_text: str) -> Dict[str, Any]:
-        if settings.is_gemini_enabled:
-            try:
-                return await cls._extract_with_gemini(raw_text)
-            except Exception as e:
-                logger.error(f"Gemini extraction failed: {e}. Trying OpenAI or fallback.")
-
-        if settings.is_openai_enabled:
-            try:
-                return await cls._extract_with_openai(raw_text)
-            except Exception as e:
-                logger.error(f"OpenAI extraction failed: {e}. Falling back to deterministic engine.")
-
-        mock_data = MockAIService.get_deterministic_extraction(raw_text)
-        evaluated = ConfidenceService.evaluate_field_confidences(mock_data["record_data"])
-        mock_data["confidence_evaluation"] = evaluated
-        return mock_data
+        from backend.app.ai.multilingual.extraction_service import LandFieldExtractionService
+        return await LandFieldExtractionService.extract_structured_record(raw_text)
 
     @classmethod
     def extract_fields_sync(cls, raw_text: str) -> Dict[str, Any]:
-        if settings.is_gemini_enabled or settings.is_openai_enabled:
-            from backend.app.services.ai_extractor import AIExtractorService
-            llm_res = AIExtractorService._extract_with_llm(raw_text)
-            if llm_res:
-                evaluated = ConfidenceService.evaluate_field_confidences(llm_res)
-                return {
-                    "record_data": llm_res,
-                    "average_confidence": evaluated["average_confidence"],
-                    "confidence_evaluation": evaluated,
-                    "source": "Google Gemini" if settings.is_gemini_enabled else f"OpenAI {settings.OPENAI_MODEL}"
-                }
-        mock_data = MockAIService.get_deterministic_extraction(raw_text)
-        evaluated = ConfidenceService.evaluate_field_confidences(mock_data["record_data"])
-        mock_data["confidence_evaluation"] = evaluated
-        return mock_data
+        from backend.app.ai.multilingual.extraction_service import LandFieldExtractionService
+        return LandFieldExtractionService.extract_structured_record_sync(raw_text)
 
     @classmethod
     async def _extract_with_gemini(cls, raw_text: str) -> Dict[str, Any]:
@@ -84,6 +57,53 @@ Return ONLY valid JSON matching these keys."""
                 logger.warning(f"Gemini {model} async extraction error: {ex}")
         raise RuntimeError("All Gemini models failed")
 
+
+    @classmethod
+    async def _extract_with_openrouter(cls, raw_text: str) -> Dict[str, Any]:
+        prompt = f"""You are an expert Indian land deed digitization system.
+Extract the following structured JSON fields from this land document text:
+owner_name, father_husband_name, survey_number, khasra_number, khata_number, plot_number, village, tehsil, district, state, land_area (float in acres), land_classification, registration_number, registration_date, document_type.
+
+Document text:
+\"\"\"{raw_text[:4000]}\"\"\"
+
+Return ONLY valid JSON matching these keys."""
+        headers = {
+            "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
+            "HTTP-Referer": "https://sih26018-smart-land-records.gov.in",
+            "X-Title": "SIH Smart Land Records Digitization",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": settings.OPENROUTER_MODEL,
+            "messages": [
+                {"role": "system", "content": "You are a precise land records extraction parser. Output valid JSON only."},
+                {"role": "user", "content": prompt}
+            ],
+            "response_format": {"type": "json_object"},
+            "max_tokens": 1500
+        }
+        async with httpx.AsyncClient(timeout=45.0) as client:
+            resp = await client.post(f"{settings.OPENROUTER_BASE_URL}/chat/completions", headers=headers, json=payload)
+            if resp.status_code == 400 and ("response_format" in resp.text or "unsupported" in resp.text.lower()):
+                payload.pop("response_format", None)
+                resp = await client.post(f"{settings.OPENROUTER_BASE_URL}/chat/completions", headers=headers, json=payload)
+            resp.raise_for_status()
+            data = resp.json()
+            content = data["choices"][0]["message"]["content"]
+            clean_json = content.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+            if "{" in clean_json and "}" in clean_json:
+                start = clean_json.find("{")
+                end = clean_json.rfind("}") + 1
+                clean_json = clean_json[start:end]
+            parsed = json.loads(clean_json)
+            evaluated = ConfidenceService.evaluate_field_confidences(parsed)
+            return {
+                "record_data": parsed,
+                "average_confidence": evaluated["average_confidence"],
+                "confidence_evaluation": evaluated,
+                "source": f"OpenRouter ({settings.OPENROUTER_MODEL})"
+            }
 
     @classmethod
     async def _extract_with_openai(cls, raw_text: str) -> Dict[str, Any]:
