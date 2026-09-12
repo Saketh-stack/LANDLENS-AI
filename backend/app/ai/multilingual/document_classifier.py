@@ -84,24 +84,30 @@ class DocumentClassifier:
             calc_conf = 72.0
 
         detected_type = best_type
-        # Normalize user selection to canonical
-        normalized_user_type = cls.normalize_document_type(user_selected_type)
 
-        final_type = normalized_user_type if normalized_user_type else detected_type
+        # Check if user opted for Auto-Detect or specified a concrete type
+        is_auto = (not user_selected_type) or ("auto" in user_selected_type.lower())
+        if is_auto:
+            final_type = detected_type
+            is_overridden = False
+        else:
+            normalized_user_type = cls.normalize_document_type(user_selected_type)
+            final_type = normalized_user_type if normalized_user_type else detected_type
+            is_overridden = bool(final_type != detected_type)
 
         return {
             "detected_type": detected_type,
             "selected_type": final_type,
             "confidence": calc_conf,
-            "is_user_overridden": bool(normalized_user_type and normalized_user_type != detected_type),
+            "is_user_overridden": is_overridden,
             "type_scores": scores,
             "supported_types": cls.CANONICAL_TYPES
         }
 
     @classmethod
     def normalize_document_type(cls, raw: str) -> str:
-        if not raw:
-            return cls.SALE_DEED
+        if not raw or "auto" in raw.lower():
+            return None
         r = raw.lower().strip()
         if "sale" in r or "deed" in r or "बैनामा" in r:
             return cls.SALE_DEED

@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { 
   UploadCloud, FileText, CheckCircle2, AlertCircle, RefreshCw, 
-  ArrowRight, Sparkles, Layers, Eye, ShieldCheck 
+  ArrowRight, Sparkles, Layers, Eye, ShieldCheck, Edit3 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const DigitizeHistoricalPage = () => {
   const [file, setFile] = useState(null);
   const [language, setLanguage] = useState('English');
-  const [documentType, setDocumentType] = useState('Sale Deed');
+  const [documentType, setDocumentType] = useState('Auto-Detect');
   const [scenario, setScenario] = useState('standard');
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState(null);
@@ -151,6 +151,7 @@ const DigitizeHistoricalPage = () => {
                 onChange={(e) => setDocumentType(e.target.value)}
                 className="w-full px-3 py-2 text-xs font-medium rounded-lg border border-slate-300 bg-white focus:ring-1 focus:ring-blue-900"
               >
+                <option value="Auto-Detect">Auto-Detect Document Type (AI Classification)</option>
                 <option value="Registered Sale Deed">Registered Sale Deed</option>
                 <option value="Khasra / Khatauni Register">Khasra / Khatauni Register</option>
                 <option value="Cadastral Boundary Map">Cadastral Boundary Map</option>

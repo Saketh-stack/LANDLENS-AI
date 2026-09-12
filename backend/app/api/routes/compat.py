@@ -44,11 +44,11 @@ def categorize_field(field_name: str) -> str:
     name = field_name.lower()
     if any(k in name for k in ['owner', 'seller', 'buyer', 'transferee', 'transferor', 'petitioner', 'applicant', 'father', 'husband', 'mother', 'party', 'witness', 'aadhaar', 'pan', 'identity']):
         return "Land Owner Details"
-    elif any(k in name for k in ['survey', 'khasra', 'khata', 'plot', 'area', 'extent', 'sub_division', 'hissa', 'boundary', 'north', 'south', 'east', 'west', 'classification', 'land_type', 'land_use', 'kisam']):
+    elif any(k in name for k in ['survey', 'khasra', 'khata', 'plot', 'area', 'extent', 'sub_division', 'hissa', 'boundary', 'north', 'south', 'east', 'west', 'classification', 'land_type', 'land_use', 'kisam', 'parcel', 'measurements', 'shapes']):
         return "Land Details"
     elif any(k in name for k in ['state', 'district', 'tehsil', 'mandal', 'taluk', 'village', 'mouza', 'address', 'locality', 'pin']):
         return "Location Details"
-    elif any(k in name for k in ['registration', 'deed', 'order', 'mutation', 'document', 'date', 'book', 'volume', 'sro', 'sub_registrar', 'fee', 'duty', 'consideration', 'stamp', 'transaction']):
+    elif any(k in name for k in ['registration', 'deed', 'order', 'mutation', 'document', 'date', 'book', 'volume', 'sro', 'sub_registrar', 'fee', 'duty', 'consideration', 'stamp', 'transaction', 'authority', 'officer', 'status', 'seal', 'signature', 'remarks', 'supporting', 'reason']):
         return "Document Details"
     return "Additional Details"
 
@@ -124,20 +124,28 @@ def get_record_detail(record_id: int, db: Session = Depends(get_db)):
         ("survey_number", "Survey Number", "Land Details", record.survey_number or "Not found", 95.0, True, "survey_number"),
         ("sub_division_number", "Sub-Division Number", "Land Details", "Not found", 70.0, False, "survey_number"),
         ("land_area", "Land Area (Acres)", "Land Details", str(record.land_area or "Not found"), 92.0, True, "numeric"),
-        ("land_classification", "Land Type / Classification", "Land Details", record.land_classification or "Agricultural", 90.0, False, "text"),
+        ("land_classification", "Land Type / Classification", "Land Details", record.land_classification or "Not found", 90.0, False, "text"),
         ("plot_number", "Plot Number", "Land Details", record.plot_number or "Not found", 85.0, False, "text"),
-        ("state", "State", "Location Details", record.state or "Madhya Pradesh", 98.0, True, "text"),
+        ("state", "State", "Location Details", record.state or "Not found", 98.0, True, "text"),
         ("district", "District", "Location Details", record.district or "Not found", 95.0, True, "text"),
         ("tehsil", "Mandal / Tehsil / Taluk", "Location Details", record.tehsil or "Not found", 90.0, False, "text"),
         ("village", "Village", "Location Details", record.village or "Not found", 95.0, True, "text"),
-        ("document_number", "Document Number", "Document Details", record.registration_number or "Not found", 95.0, True, "text"),
-        ("registration_number", "Registration Number", "Document Details", record.registration_number or "Not found", 95.0, True, "text"),
-        ("registration_date", "Registration Date", "Document Details", record.registration_date or "Not found", 92.0, False, "date"),
-        ("transaction_type", "Transaction / Deed Type", "Document Details", record.document_type or "Sale Deed", 95.0, False, "text"),
+        ("document_number", "Document / Order Number", "Document Details", record.registration_number or "Not found", 95.0, True, "text"),
+        ("registration_date", "Document / Order Date", "Document Details", record.registration_date or "Not found", 92.0, False, "date"),
+        ("transaction_type", "Document / Record Type", "Document Details", record.document_type or "Land Document", 95.0, False, "text"),
     ]
 
+    aliases = {
+        "tehsil": {"tehsil", "mandal_tehsil_taluk", "mandal", "taluk"},
+        "document_number": {"document_number", "registration_number", "order_number", "mutation_number"},
+        "registration_date": {"registration_date", "order_date"},
+        "survey_number": {"survey_number", "khasra_number"},
+        "owner_name": {"owner_name", "applicant_name", "new_owner_name", "buyer_name"}
+    }
+
     for fname, flabel, fcat, fval, fconf, freq, fvtype in core_canonical:
-        if fname not in seen_fields:
+        field_aliases = aliases.get(fname, {fname})
+        if not any(a in seen_fields for a in field_aliases):
             status = "USER_VERIFIED" if record.status == "USER_VERIFIED" else "AI_EXTRACTED"
             enriched_fields.append({
                 "id": None,
@@ -360,49 +368,60 @@ async def upload_historical_document(
     extracted_fields_list = type_extraction.get("extracted_fields", [])
 
     # Extract key attributes for LandRecord database entity
-    sy_no = fields_map.get("survey_number")
-    if not sy_no or str(sy_no).strip().lower() in ["not found", "none", "null"]:
-        sy_no = "125/A"
+    sy_no = fields_map.get("survey_number") or fields_map.get("plot_number") or fields_map.get("khasra_number")
+    if not sy_no or str(sy_no).strip().lower() in ["not found", "none", "null", ""]:
+        sy_no = "Not found"
 
-    rec_owner = fields_map.get("buyer_name") or fields_map.get("owner_name") or fields_map.get("new_owner_name")
-    if not rec_owner or str(rec_owner).strip().lower() in ["not found", "none", "null"]:
-        rec_owner = "Recorded Landowner"
+    rec_owner = (
+        fields_map.get("buyer_name") or
+        fields_map.get("owner_name") or
+        fields_map.get("new_owner_name") or
+        fields_map.get("applicant_name")
+    )
+    if not rec_owner or str(rec_owner).strip().lower() in ["not found", "none", "null", ""]:
+        rec_owner = "Not found"
 
     prev_owner = fields_map.get("seller_name") or fields_map.get("previous_owner_name")
+    if prev_owner and str(prev_owner).strip().lower() in ["not found", "none", "null", ""]:
+        prev_owner = None
 
     # Land Area numeric extraction
-    raw_area = fields_map.get("land_area", "2.45")
+    raw_area = fields_map.get("land_area", "0.0")
     import re
     m_area = re.search(r'([\d\.]+)', str(raw_area))
-    calc_area = float(m_area.group(1)) if m_area else 2.45
+    calc_area = float(m_area.group(1)) if m_area else 0.0
+
+    doc_num = (
+        fields_map.get("registration_number") or
+        fields_map.get("document_number") or
+        fields_map.get("mutation_number") or
+        fields_map.get("order_number")
+    )
+    if not doc_num or str(doc_num).strip().lower() in ["not found", "none", "null", ""]:
+        doc_num = f"DOC-{os.urandom(3).hex().upper()}"
+    else:
+        doc_num = str(doc_num).strip()
+        if db.query(LandRecord).filter(LandRecord.registration_number == doc_num).first():
+            doc_num = f"{doc_num}-{os.urandom(2).hex().upper()}"
+
+    reg_date = fields_map.get("registration_date") or fields_map.get("order_date") or "Not found"
 
     record = LandRecord(
         survey_number=str(sy_no),
         khasra_number=str(fields_map.get("khasra_number") or sy_no),
-        khata_number=str(fields_map.get("khata_number") or "KH-9912"),
-        plot_number=str(fields_map.get("plot_number") or fields_map.get("parcel_numbers") or "P-1"),
+        khata_number=str(fields_map.get("khata_number") or "Not found"),
+        plot_number=str(fields_map.get("plot_number") or fields_map.get("parcel_numbers") or "Not found"),
         owner_name=str(rec_owner),
         father_husband_name=str(fields_map.get("father_husband_name") or ""),
         previous_owner=str(prev_owner) if prev_owner else None,
-        village=str(fields_map.get("village") or "Bharatpur"),
-        tehsil=str(fields_map.get("mandal_tehsil_taluk") or "Revenue Circle"),
-        district=str(fields_map.get("district") or "Central District"),
-        state=str(fields_map.get("state") or "India"),
+        village=str(fields_map.get("village") or "Not found"),
+        tehsil=str(fields_map.get("mandal_tehsil_taluk") or "Not found"),
+        district=str(fields_map.get("district") or "Not found"),
+        state=str(fields_map.get("state") or "Not found"),
         land_area=calc_area,
-        land_classification=str(fields_map.get("land_type") or "Agricultural"),
-        registration_number=(
-            f"DOC-{os.urandom(3).hex().upper()}"
-            if not fields_map.get("registration_number") and not fields_map.get("order_number") and not fields_map.get("document_number")
-            or str(fields_map.get("registration_number") or fields_map.get("order_number") or fields_map.get("document_number") or "").strip().lower() in ["not found", "none", "null", ""]
-            else (
-                str(fields_map.get("registration_number") or fields_map.get("order_number") or fields_map.get("document_number")).strip()
-                if not db.query(LandRecord).filter(
-                    LandRecord.registration_number == str(fields_map.get("registration_number") or fields_map.get("order_number") or fields_map.get("document_number")).strip()
-                ).first()
-                else f"{str(fields_map.get('registration_number') or fields_map.get('order_number') or fields_map.get('document_number')).strip()}-{os.urandom(2).hex().upper()}"
-            )
-        ),
-        registration_date=str(fields_map.get("registration_date") or fields_map.get("order_date") or "12-09-2026"),
+        land_classification=str(fields_map.get("land_type") or "Not found"),
+        registration_number=doc_num,
+        registration_date=str(reg_date),
         document_type=final_doc_type,
         status="OFFICER_REVIEW",
         document_status="Digitized - Awaiting Officer Verification",

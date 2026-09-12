@@ -96,9 +96,10 @@ const SplitScreenVerificationPage = () => {
 
     // Numeric check for area
     if (val && val !== 'Not found' && field.validation_type === 'numeric') {
-      const num = parseFloat(val);
+      const match = val.match(/([\d\.]+)/);
+      const num = match ? parseFloat(match[1]) : NaN;
       if (isNaN(num) || num <= 0) {
-        errors.push('Must be a positive numeric value (e.g. 2.50)');
+        errors.push('Must contain a positive numeric value (e.g. 2.50 or 0.72 Acres)');
       }
     }
 
