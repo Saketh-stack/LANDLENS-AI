@@ -14,11 +14,25 @@ class ExtractionService:
     """
     @classmethod
     async def extract_fields_from_text(cls, raw_text: str) -> Dict[str, Any]:
+        if settings.MOCK_MODE or not settings.is_llm_enabled:
+            data = MockAIService.get_deterministic_extraction(raw_text)
+            eval_res = ConfidenceService.evaluate_field_confidences(data["record_data"])
+            data["confidence_evaluation"] = eval_res
+            data["average_confidence"] = eval_res["average_confidence"]
+            return data
+
         from backend.app.ai.multilingual.extraction_service import LandFieldExtractionService
         return await LandFieldExtractionService.extract_structured_record(raw_text)
 
     @classmethod
     def extract_fields_sync(cls, raw_text: str) -> Dict[str, Any]:
+        if settings.MOCK_MODE or not settings.is_llm_enabled:
+            data = MockAIService.get_deterministic_extraction(raw_text)
+            eval_res = ConfidenceService.evaluate_field_confidences(data["record_data"])
+            data["confidence_evaluation"] = eval_res
+            data["average_confidence"] = eval_res["average_confidence"]
+            return data
+
         from backend.app.ai.multilingual.extraction_service import LandFieldExtractionService
         return LandFieldExtractionService.extract_structured_record_sync(raw_text)
 
