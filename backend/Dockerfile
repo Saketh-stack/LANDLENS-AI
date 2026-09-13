@@ -21,7 +21,6 @@ RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 
 # Copy backend application source code
 COPY backend /app/backend
-COPY land_records.db /app/land_records.db
 
 # Expose container port
 EXPOSE 8080
