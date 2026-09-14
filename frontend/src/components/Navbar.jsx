@@ -19,21 +19,10 @@ const Navbar = () => {
 
       {/* Main Government Header */}
       <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
-        {/* Emblem & Portal Title */}
+        {/* Brand Title */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-11 h-11 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-lg border-2 border-amber-500 shadow-sm">
-            <span className="text-amber-400">DoLR</span>
-          </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs uppercase tracking-widest text-slate-500 font-semibold">
-                {t('ministry_sub')}
-              </span>
-              <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-emerald-300">
-                SIH26018
-              </span>
-            </div>
-            <h1 className="text-xl font-black text-slate-900 tracking-tight leading-tight group-hover:text-blue-900 transition-colors">
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight leading-tight group-hover:text-blue-900 transition-colors">
               {t('portal_title')}
             </h1>
             <p className="text-xs text-slate-500 hidden sm:block">
