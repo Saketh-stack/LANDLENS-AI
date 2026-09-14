@@ -25,7 +25,7 @@ class SearchService:
 
         q = db.query(LandRecord)
         if not include_internal:
-            q = q.filter(LandRecord.is_public == True, LandRecord.status.in_(["APPROVED", "PUBLISHED"]))
+            q = q.filter(LandRecord.is_public == True, LandRecord.status.in_(["APPROVED", "PUBLISHED", "USER_VERIFIED"]))
 
         conditions = []
         for term in search_terms:

@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import httpx
 from backend.app.core.config import settings
 from backend.app.core.logging import logger
@@ -13,7 +13,7 @@ class ExtractionService:
     - Uses deterministic MockAIService when key is absent or MOCK_MODE=True.
     """
     @classmethod
-    async def extract_fields_from_text(cls, raw_text: str) -> Dict[str, Any]:
+    async def extract_fields_from_text(cls, raw_text: str, ocr_lines: Optional[list] = None) -> Dict[str, Any]:
         if settings.MOCK_MODE or not settings.is_llm_enabled:
             data = MockAIService.get_deterministic_extraction(raw_text)
             eval_res = ConfidenceService.evaluate_field_confidences(data["record_data"])
@@ -22,10 +22,10 @@ class ExtractionService:
             return data
 
         from backend.app.ai.multilingual.extraction_service import LandFieldExtractionService
-        return await LandFieldExtractionService.extract_structured_record(raw_text)
+        return await LandFieldExtractionService.extract_structured_record(raw_text, ocr_lines=ocr_lines)
 
     @classmethod
-    def extract_fields_sync(cls, raw_text: str) -> Dict[str, Any]:
+    def extract_fields_sync(cls, raw_text: str, ocr_lines: Optional[list] = None) -> Dict[str, Any]:
         if settings.MOCK_MODE or not settings.is_llm_enabled:
             data = MockAIService.get_deterministic_extraction(raw_text)
             eval_res = ConfidenceService.evaluate_field_confidences(data["record_data"])
@@ -34,7 +34,7 @@ class ExtractionService:
             return data
 
         from backend.app.ai.multilingual.extraction_service import LandFieldExtractionService
-        return LandFieldExtractionService.extract_structured_record_sync(raw_text)
+        return LandFieldExtractionService.extract_structured_record_sync(raw_text, ocr_lines=ocr_lines)
 
     @classmethod
     async def _extract_with_gemini(cls, raw_text: str) -> Dict[str, Any]:

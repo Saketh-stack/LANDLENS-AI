@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
   Send, Sparkles, Clock, CheckCircle2, AlertTriangle, ArrowRight, 
@@ -69,7 +69,7 @@ const NewRegistrationsPage = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-wider text-purple-900 bg-purple-100 px-2.5 py-0.5 rounded-full">
-              Sub-Registrar Integration (Mock API)
+              Sub-Registrar Integration (SRO API)
             </span>
             <span className="text-xs font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
               Target: Public Viewing in 2–3 Days

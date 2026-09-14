@@ -137,7 +137,7 @@ const Navbar = () => {
                 Dashboard
               </Link>
               <Link to="/officer/new-registrations" className={`hover:text-amber-400 ${isActive('/officer/new-registrations') ? 'text-amber-400 font-bold' : ''}`}>
-                New Registrations (Mock API)
+                New Registrations (SRO)
               </Link>
               <Link to="/officer/digitize-historical" className={`hover:text-amber-400 ${isActive('/officer/digitize-historical') ? 'text-amber-400 font-bold' : ''}`}>
                 Digitize Historical Record

@@ -1,7 +1,7 @@
 from typing import Optional, List
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from backend.app.core.database import get_db
 from backend.app.models.land_record import LandRecord
 from backend.app.models.registration import Registration
@@ -44,7 +44,7 @@ def get_public_land_record_detail(id: int, db: Session = Depends(get_db)):
     rec = db.query(LandRecord).filter(
         LandRecord.id == id,
         LandRecord.is_public == True,
-        LandRecord.status.in_(["APPROVED", "PUBLISHED"])
+        LandRecord.status.in_(["APPROVED", "PUBLISHED", "USER_VERIFIED"])
     ).first()
     if not rec:
         raise HTTPException(
@@ -103,15 +103,30 @@ def get_registration_status(registration_number: str, db: Session = Depends(get_
 @router.get("/stats")
 def get_public_stats(db: Session = Depends(get_db)):
     verified_count = db.query(LandRecord).filter(
-        LandRecord.status.in_(["APPROVED", "PUBLISHED"]),
+        LandRecord.status.in_(["APPROVED", "PUBLISHED", "USER_VERIFIED"]),
         LandRecord.is_public == True
     ).count()
+    districts_count = db.query(func.count(func.distinct(LandRecord.district))).filter(
+        LandRecord.district.isnot(None),
+        LandRecord.district != "",
+        LandRecord.district != "Not found"
+    ).scalar() or 1
+    villages_count = db.query(func.count(func.distinct(LandRecord.village))).filter(
+        LandRecord.village.isnot(None),
+        LandRecord.village != "",
+        LandRecord.village != "Not found"
+    ).scalar() or 1
+    states_count = db.query(func.count(func.distinct(LandRecord.state))).filter(
+        LandRecord.state.isnot(None),
+        LandRecord.state != "",
+        LandRecord.state != "Not found"
+    ).scalar() or 1
 
     return {
-        "total_verified_records": 12450 + verified_count - 5,
-        "villages_covered": 482,
-        "districts_active": 52,
-        "states_onboarded": 10,
+        "total_verified_records": verified_count,
+        "villages_covered": villages_count,
+        "districts_active": districts_count,
+        "states_onboarded": states_count,
         "system_status": "OPERATIONAL",
         "service_target": "Verified records made publicly accessible within 2-3 days"
     }

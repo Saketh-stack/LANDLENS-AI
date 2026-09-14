@@ -122,8 +122,11 @@ class BusinessRulesEngine:
 
         results.append({
             "rule_id": "RULE-07",
+            "rule": "CADASTRAL_AREA_MATCH",
             "rule_name": "Cadastral Ground Truth Area Cross-Check",
             "status": cadastral_status,
+            "severity": "ERROR" if cadastral_status == "WARNING" else "INFO",
+            "requires_review": bool(cadastral_status == "WARNING"),
             "message": cadastral_msg,
             "details": cadastral_details
         })

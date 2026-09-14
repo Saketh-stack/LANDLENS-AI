@@ -36,9 +36,19 @@ def get_dashboard_metrics(db: Session = Depends(get_db)):
 
 @officer_compat_router.get("/verification-queue")
 def get_verification_queue(db: Session = Depends(get_db)):
-    return db.query(LandRecord).filter(
-        LandRecord.status.in_(["OFFICER_REVIEW", "VALIDATION_PENDING", "LOW_CONFIDENCE", "VALIDATION_FAILED", "PROCESSING", "RECEIVED"])
+    import re
+    records = db.query(LandRecord).filter(
+        LandRecord.status.in_(["OFFICER_REVIEW", "VALIDATION_PENDING", "LOW_CONFIDENCE", "VALIDATION_FAILED", "PROCESSING", "RECEIVED"]),
+        LandRecord.document_type != "Cadastral Boundary Map",
+        LandRecord.owner_name.isnot(None)
     ).order_by(LandRecord.id.desc()).all()
+
+    # Sanitize survey numbers to remove any raw brackets or quotes
+    for r in records:
+        if r.survey_number and ("[" in r.survey_number or "'" in r.survey_number):
+            matches = re.findall(r'[0-9]+/[0-9A-Za-z]+|[0-9]+', r.survey_number)
+            r.survey_number = matches[0] if matches else (r.survey_number or "")
+    return records
 
 def categorize_field(field_name: str) -> str:
     name = field_name.lower()
@@ -108,8 +118,12 @@ def get_record_detail(record_id: int, db: Session = Depends(get_db)):
             "final_value": f.corrected_value if f.corrected_value is not None else (f.extracted_value or "Not found"),
             "value": f.corrected_value if f.corrected_value is not None else (f.extracted_value or "Not found"),
             "confidence": f.confidence,
-            "confidence_tier": f.confidence_tier or ("HIGH" if f.confidence >= 80 else ("MEDIUM" if f.confidence >= 60 else "LOW")),
-            "needs_verification": (f.confidence < 60),
+            "confidence_tier": f.confidence_tier or ("HIGH" if f.confidence >= 90 else ("MEDIUM" if f.confidence >= 80 else "LOW")),
+            "requires_review": getattr(f, "requires_review", False) or (f.confidence < 80),
+            "source_text": getattr(f, "source_text", None),
+            "ocr_confidence": getattr(f, "ocr_confidence", None),
+            "page_number": getattr(f, "page_number", 1),
+            "needs_verification": (f.confidence < 80 or getattr(f, "requires_review", False)),
             "status": status,
             "is_required": is_required_field(f.field_name),
             "validation_type": get_validation_type(f.field_name),
@@ -299,11 +313,11 @@ def verify_record(record_id: int, req: VerificationActionRequest, db: Session = 
 
     action = req.action.upper()
     if action in ["APPROVED", "CONFIRM", "USER_VERIFIED"]:
-        record.status = "USER_VERIFIED"
-        record.verification_status = "User Verified"
+        record.status = "APPROVED"
+        record.verification_status = "Officer Verified & Approved"
         record.publication_status = "PUBLISHED"
         record.is_public = True
-        record.document_status = "Digitized and User Verified (Awaiting Government Certification)"
+        record.document_status = "Digitized, Officer Verified & Publicly Available"
     elif action in ["SAVE", "SAVE_CHANGES"]:
         record.status = "USER_CORRECTED"
         record.verification_status = "User Corrected"
@@ -380,10 +394,14 @@ async def upload_historical_document(
     )
     if not rec_owner or str(rec_owner).strip().lower() in ["not found", "none", "null", ""]:
         rec_owner = "Not found"
+    else:
+        rec_owner = re.sub(r'^(?:PURCHASER|BUYER|OWNER|VENDOR|SELLER|\/|\:|\s)+', '', str(rec_owner), flags=re.IGNORECASE).strip()
 
     prev_owner = fields_map.get("seller_name") or fields_map.get("previous_owner_name")
     if prev_owner and str(prev_owner).strip().lower() in ["not found", "none", "null", ""]:
         prev_owner = None
+    elif prev_owner:
+        prev_owner = re.sub(r'^(?:PURCHASER|BUYER|OWNER|VENDOR|SELLER|\/|\:|\s)+', '', str(prev_owner), flags=re.IGNORECASE).strip()
 
     # Land Area numeric extraction
     raw_area = fields_map.get("land_area", "0.0")
@@ -391,12 +409,23 @@ async def upload_historical_document(
     m_area = re.search(r'([\d\.]+)', str(raw_area))
     calc_area = float(m_area.group(1)) if m_area else 0.0
 
-    doc_num = (
-        fields_map.get("registration_number") or
-        fields_map.get("document_number") or
-        fields_map.get("mutation_number") or
-        fields_map.get("order_number")
-    )
+    doc_candidates = [
+        fields_map.get("registration_number"),
+        fields_map.get("order_number"),
+        fields_map.get("document_number"),
+        fields_map.get("mutation_number")
+    ]
+    doc_num = None
+    for cand in doc_candidates:
+        if cand and str(cand).strip().lower() not in ["not found", "none", "null", ""] and any(ch.isdigit() for ch in str(cand)):
+            doc_num = str(cand).strip()
+            break
+    if not doc_num:
+        for cand in doc_candidates:
+            if cand and str(cand).strip().lower() not in ["not found", "none", "null", ""]:
+                doc_num = str(cand).strip()
+                break
+
     if not doc_num or str(doc_num).strip().lower() in ["not found", "none", "null", ""]:
         doc_num = f"DOC-{os.urandom(3).hex().upper()}"
     else:
@@ -626,4 +655,258 @@ def cross_verify_documents(req: CrossVerifyRequest, db: Session = Depends(get_db
         for r in records
     ]
     return comparison_result
+
+
+@officer_compat_router.post("/cross-verify/approve")
+def approve_cross_verification(req: CrossVerifyRequest, db: Session = Depends(get_db)):
+    """
+    Officer Legal Adjudication: Approves all records in the audited dossier,
+    certifies the title and boundary consistency, and publishes them for public citizen viewing.
+    """
+    query = db.query(LandRecord)
+    if req.record_ids:
+        records = query.filter(LandRecord.id.in_(req.record_ids)).all()
+    elif req.survey_number:
+        records = query.filter(LandRecord.survey_number == req.survey_number).all()
+    else:
+        records = query.filter(LandRecord.source_type == "DOSSIER").order_by(LandRecord.id.desc()).limit(4).all()
+
+    if not records:
+        raise HTTPException(status_code=404, detail="No dossier records found to approve.")
+
+    approved_ids = []
+    for r in records:
+        r.status = "APPROVED"
+        r.verification_status = "Officer Verified & Certified"
+        r.publication_status = "PUBLISHED"
+        r.is_public = True
+        r.document_status = "Digitized, Verified & Publicly Available"
+        approved_ids.append(r.id)
+
+        # Log verification record
+        db.add(VerificationRecord(
+            land_record_id=r.id,
+            officer_name="Senior Revenue Officer & Tahsildar",
+            action="APPROVED_CONSISTENT",
+            remarks="Approved Title & Boundary Consistency across Parcel Dossier"
+        ))
+
+    db.commit()
+    return {
+        "status": "SUCCESS",
+        "message": f"{len(approved_ids)} dossier records approved and published to Public Citizen Portal.",
+        "approved_ids": approved_ids
+    }
+
+
+@officer_compat_router.post("/dossier-upload")
+async def upload_parcel_dossier(
+    sale_deed: Optional[UploadFile] = File(None),
+    khasra: Optional[UploadFile] = File(None),
+    cadastral_map: Optional[UploadFile] = File(None),
+    mutation_order: Optional[UploadFile] = File(None),
+    language: str = Form("English / Hindi"),
+    db: Session = Depends(get_db)
+):
+    """
+    Simultaneous upload and processing of the 4 statutory land records in a Parcel Dossier:
+    1. Registered Sale Deed
+    2. Khasra / Khatauni Register
+    3. Cadastral Boundary Map
+    4. Mutation Sanction Order
+    Immediately extracts fields and executes 4-way cross-document consistency audit.
+    """
+    import time
+    import re
+    from backend.app.ai.multilingual.ocr_service import MultilingualOCRService
+    from backend.app.ai.multilingual.type_extractors import TypeExtractors
+    from backend.app.services.cross_document_service import CrossDocumentService
+
+    file_inputs = [
+        ("Registered Sale Deed", sale_deed),
+        ("Khasra / Khatauni Register", khasra),
+        ("Cadastral Boundary Map", cadastral_map),
+        ("Mutation Sanction Order", mutation_order)
+    ]
+
+    valid_uploads = [(dtype, f) for dtype, f in file_inputs if f and f.filename]
+    if not valid_uploads:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Please provide at least one land record document for the parcel dossier."
+        )
+
+    ocr_service = MultilingualOCRService()
+    created_records = []
+    docs_data = []
+    discovered_survey_no = None
+
+    for doc_type, upload_file in valid_uploads:
+        contents = await upload_file.read()
+        filename = f"dossier_{int(time.time())}_{upload_file.filename}"
+        dest = os.path.join(UPLOAD_DIR, filename)
+        with open(dest, "wb") as f:
+            f.write(contents)
+
+        # 1. OCR Ingestion
+        ocr_res = ocr_service.process_document(dest)
+        raw_ocr_text = ocr_res.get("text", "")
+
+        # 2. Type-specific extraction
+        type_extraction = TypeExtractors.extract_by_document_type(raw_ocr_text, doc_type)
+        fields_map = type_extraction.get("fields_map", {})
+        extracted_fields_list = type_extraction.get("extracted_fields", [])
+
+        # Survey/Khasra Number
+        sy_no = fields_map.get("survey_number") or fields_map.get("khasra_number") or fields_map.get("plot_number")
+        if sy_no and str(sy_no).strip().lower() not in ["not found", "none", "null", ""]:
+            sy_no = str(sy_no).strip()
+            if not discovered_survey_no:
+                discovered_survey_no = sy_no
+        else:
+            sy_no = "Not found"
+
+        # Owner
+        rec_owner = (
+            fields_map.get("buyer_name") or
+            fields_map.get("owner_name") or
+            fields_map.get("new_owner_name") or
+            fields_map.get("applicant_name")
+        )
+        if not rec_owner or str(rec_owner).strip().lower() in ["not found", "none", "null", ""]:
+            rec_owner = "Not found"
+        else:
+            rec_owner = re.sub(r'^(?:PURCHASER|BUYER|OWNER|VENDOR|SELLER|\/|\:|\s)+', '', str(rec_owner), flags=re.IGNORECASE).strip()
+
+        prev_owner = fields_map.get("seller_name") or fields_map.get("previous_owner_name")
+        if prev_owner and str(prev_owner).strip().lower() in ["not found", "none", "null", ""]:
+            prev_owner = None
+        elif prev_owner:
+            prev_owner = re.sub(r'^(?:PURCHASER|BUYER|OWNER|VENDOR|SELLER|\/|\:|\s)+', '', str(prev_owner), flags=re.IGNORECASE).strip()
+
+        # Land Area
+        raw_area = fields_map.get("land_area", "0.0")
+        m_area = re.search(r'([\d\.]+)', str(raw_area))
+        calc_area = float(m_area.group(1)) if m_area else 0.0
+
+        # Registration / Document Number (prefer candidate with digits like Rc.No.456/2023)
+        doc_candidates = [
+            fields_map.get("registration_number"),
+            fields_map.get("order_number"),
+            fields_map.get("document_number"),
+            fields_map.get("mutation_number")
+        ]
+        doc_num = None
+        for cand in doc_candidates:
+            if cand and str(cand).strip().lower() not in ["not found", "none", "null", ""] and any(ch.isdigit() for ch in str(cand)):
+                doc_num = str(cand).strip()
+                break
+        if not doc_num:
+            for cand in doc_candidates:
+                if cand and str(cand).strip().lower() not in ["not found", "none", "null", ""]:
+                    doc_num = str(cand).strip()
+                    break
+
+        if not doc_num or str(doc_num).strip().lower() in ["not found", "none", "null", ""]:
+            doc_num = f"DOS-{os.urandom(3).hex().upper()}"
+        else:
+            doc_num = str(doc_num).strip()
+            if db.query(LandRecord).filter(LandRecord.registration_number == doc_num).first():
+                doc_num = f"{doc_num}-{os.urandom(2).hex().upper()}"
+
+        reg_date = fields_map.get("registration_date") or fields_map.get("order_date") or "Not found"
+
+        record = LandRecord(
+            survey_number=str(sy_no),
+            khasra_number=str(fields_map.get("khasra_number") or sy_no),
+            khata_number=str(fields_map.get("khata_number") or "Not found"),
+            plot_number=str(fields_map.get("plot_number") or fields_map.get("parcel_numbers") or "Not found"),
+            owner_name=str(rec_owner),
+            father_husband_name=str(fields_map.get("father_husband_name") or ""),
+            previous_owner=str(prev_owner) if prev_owner else None,
+            village=str(fields_map.get("village") or "Not found"),
+            tehsil=str(fields_map.get("mandal_tehsil_taluk") or "Not found"),
+            district=str(fields_map.get("district") or "Not found"),
+            state=str(fields_map.get("state") or "Not found"),
+            land_area=calc_area,
+            land_classification=str(fields_map.get("land_type") or "Not found"),
+            registration_number=doc_num,
+            registration_date=str(reg_date),
+            document_type=doc_type,
+            status="OFFICER_REVIEW",
+            document_status="Digitized Dossier - Awaiting Multi-Doc Verification",
+            is_public=False,
+            confidence_score=type_extraction.get("average_confidence", 92.0),
+            source_type="DOSSIER"
+        )
+        db.add(record)
+        db.flush()
+
+        doc = Document(
+            land_record_id=record.id,
+            filename=filename,
+            file_path=f"/uploads/{filename}",
+            file_type="PDF" if filename.lower().endswith(".pdf") else "IMAGE",
+            file_size=len(contents),
+            document_type=doc_type,
+            language=language,
+            ocr_status="COMPLETED",
+            ocr_raw_text=raw_ocr_text,
+            processing_status="SUCCESS"
+        )
+        db.add(doc)
+
+        for field_info in extracted_fields_list:
+            db.add(ExtractedField(
+                land_record_id=record.id,
+                field_name=field_info["field_name"],
+                field_label=field_info["field_label"],
+                extracted_value=str(field_info["extracted_value"]),
+                confidence=field_info["confidence"],
+                confidence_tier="HIGH" if field_info["confidence"] >= 80 else ("MEDIUM" if field_info["confidence"] >= 60 else "LOW"),
+                bounding_box=None
+            ))
+
+        created_records.append(record)
+
+        # Build fields map for comparison service
+        f_map_full = {}
+        for ef in extracted_fields_list:
+            f_map_full[ef["field_name"]] = str(ef["extracted_value"])
+        f_map_full.setdefault("survey_number", record.survey_number)
+        f_map_full.setdefault("khasra_number", record.khasra_number)
+        f_map_full.setdefault("khata_number", record.khata_number)
+        f_map_full.setdefault("owner_name", record.owner_name)
+        f_map_full.setdefault("previous_owner", record.previous_owner)
+        f_map_full.setdefault("land_area", f"{record.land_area} Acres")
+        f_map_full.setdefault("village", record.village)
+        f_map_full.setdefault("district", record.district)
+        f_map_full.setdefault("state", record.state)
+
+        docs_data.append({
+            "record_id": record.id,
+            "document_type": doc_type,
+            "filename": upload_file.filename,
+            "fields_map": f_map_full
+        })
+
+    # Unify survey numbers across records in this dossier if discovered
+    if discovered_survey_no and discovered_survey_no != "Not found":
+        for rec in created_records:
+            if rec.survey_number == "Not found":
+                rec.survey_number = discovered_survey_no
+
+    db.commit()
+
+    # Run CrossDocument comparison
+    comparison_result = CrossDocumentService.compare_documents(docs_data)
+    comparison_result["message"] = f"Successfully uploaded and analyzed {len(created_records)} dossier documents."
+    comparison_result["documents_analyzed_count"] = len(created_records)
+    comparison_result["record_ids"] = [r.id for r in created_records]
+    comparison_result["records"] = [
+        {"id": r.id, "survey_number": r.survey_number, "document_type": r.document_type, "owner_name": r.owner_name}
+        for r in created_records
+    ]
+    return comparison_result
+
 

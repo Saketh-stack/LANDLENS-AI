@@ -333,23 +333,23 @@ const RecordDetailsModal = ({ record, onClose, initialTab = 'details' }) => {
                   </div>
                   <div>
                     <span className="text-xs text-slate-500 block">Father / Husband Name</span>
-                    <span className="font-medium text-slate-800">{record.father_husband_name || 'Anand Kumar'}</span>
+                    <span className="font-medium text-slate-800">{record.father_husband_name || '—'}</span>
                   </div>
                   <div>
                     <span className="text-xs text-slate-500 block">Ownership Nature</span>
-                    <span className="font-medium text-slate-800">{record.ownership_type || 'Individual Freehold'}</span>
+                    <span className="font-medium text-slate-800">{record.ownership_type || 'Freehold'}</span>
                   </div>
                   <div>
                     <span className="text-xs text-slate-500 block">Previous Owner</span>
-                    <span className="font-medium text-slate-800">{record.previous_owner || 'Mohanlal Sharma'}</span>
+                    <span className="font-medium text-slate-800">{record.previous_owner || '—'}</span>
                   </div>
                   <div>
                     <span className="text-xs text-slate-500 block">Mutation Number</span>
-                    <span className="font-medium font-mono text-slate-800">{record.mutation_number || 'MUT-2026/892'}</span>
+                    <span className="font-medium font-mono text-slate-800">{record.mutation_number || '—'}</span>
                   </div>
                   <div>
                     <span className="text-xs text-slate-500 block">Registration Date</span>
-                    <span className="font-medium text-slate-800">{record.registration_date}</span>
+                    <span className="font-medium text-slate-800">{record.registration_date || '—'}</span>
                   </div>
                 </div>
               </div>
@@ -366,15 +366,15 @@ const RecordDetailsModal = ({ record, onClose, initialTab = 'details' }) => {
                   </div>
                   <div>
                     <span className="text-xs text-slate-500 block">Khasra Number</span>
-                    <span className="font-bold font-mono text-slate-800">{record.khasra_number}</span>
+                    <span className="font-bold font-mono text-slate-800">{record.khasra_number || '—'}</span>
                   </div>
                   <div>
                     <span className="text-xs text-slate-500 block">Khata Number</span>
-                    <span className="font-bold font-mono text-slate-800">{record.khata_number}</span>
+                    <span className="font-bold font-mono text-slate-800">{record.khata_number || '—'}</span>
                   </div>
                   <div>
                     <span className="text-xs text-slate-500 block">Plot Number</span>
-                    <span className="font-bold font-mono text-slate-800">{record.plot_number || 'PLOT-89/B'}</span>
+                    <span className="font-bold font-mono text-slate-800">{record.plot_number || '—'}</span>
                   </div>
                   <div>
                     <span className="text-xs text-slate-500 block">Land Area</span>

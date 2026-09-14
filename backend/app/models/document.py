@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Float, JSON
 from sqlalchemy.orm import relationship
 from backend.app.core.database import Base
 
@@ -15,6 +15,11 @@ class Document(Base):
     file_type = Column(String(50), nullable=False)  # PDF, JPG, PNG
     file_size = Column(Integer, nullable=True)  # in bytes
     file_hash = Column(String(100), index=True, nullable=True)  # SHA-256
+    phash = Column(String(64), index=True, nullable=True)  # Perceptual hash for image duplicate detection
+    preprocessed_file_path = Column(String(500), nullable=True)
+    preprocessing_metadata = Column(JSON, nullable=True)
+    job_id = Column(String(100), index=True, nullable=True)
+    quality_score = Column(Float, nullable=True)
     document_type = Column(String(100), default='Sale Deed')
     language = Column(String(50), default='English')
     ocr_status = Column(String(50), default='COMPLETED')  # PENDING, PROCESSING, COMPLETED, FAILED

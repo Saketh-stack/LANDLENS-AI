@@ -64,15 +64,26 @@ class Document(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     land_record_id = Column(Integer, ForeignKey('land_records.id'), nullable=True)
+    registration_id = Column(Integer, ForeignKey('registrations.id'), nullable=True)
     filename = Column(String(255), nullable=False)
     file_path = Column(String(500), nullable=False)
     file_type = Column(String(50), nullable=False)  # PDF, JPG, PNG
+    file_size = Column(Integer, nullable=True)
     file_hash = Column(String(100), index=True, nullable=True)
+    phash = Column(String(64), index=True, nullable=True)
+    preprocessed_file_path = Column(String(500), nullable=True)
+    preprocessing_metadata = Column(JSON, nullable=True)
+    job_id = Column(String(100), index=True, nullable=True)
+    quality_score = Column(Float, nullable=True)
     document_type = Column(String(100), default='Sale Deed')  # Sale Deed, Khasra Khatauni, Cadastral Map, Mutation Sanction
     detected_language = Column(String(50), default='English')
+    language = Column(String(50), default='English')
+    ocr_status = Column(String(50), default='COMPLETED')
     ocr_raw_text = Column(Text, nullable=True)
+    processing_status = Column(String(50), default='SUCCESS')
     uploaded_by = Column(String(100), default='Officer')
     created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     land_record = relationship('LandRecord', back_populates='documents')
 
@@ -116,9 +127,13 @@ class ExtractedField(Base):
     field_label = Column(String(100), nullable=False)
     extracted_value = Column(String(255), nullable=True)
     corrected_value = Column(String(255), nullable=True)
+    source_text = Column(Text, nullable=True)
     confidence = Column(Float, default=95.0)
     confidence_tier = Column(String(20), default='HIGH')  # HIGH (>80%), MEDIUM (60-80%), LOW (<60%)
+    requires_review = Column(Boolean, default=False)
     is_verified = Column(Boolean, default=False)
+    page_number = Column(Integer, default=1)
+    ocr_confidence = Column(Float, nullable=True)
     bounding_box = Column(JSON, nullable=True)  # x, y, w, h
     
     land_record = relationship('LandRecord', back_populates='extracted_fields')
@@ -169,11 +184,15 @@ class AICorrection(Base):
     __tablename__ = 'ai_corrections'
 
     id = Column(Integer, primary_key=True, index=True)
+    document_id = Column(Integer, nullable=True)
     field_name = Column(String(100), nullable=False)
     original_ai_value = Column(String(255), nullable=False)
     corrected_value = Column(String(255), nullable=False)
+    officer_id = Column(Integer, nullable=True)
     officer_name = Column(String(150), default='Officer')
-    document_id = Column(Integer, nullable=True)
+    reason = Column(String(255), nullable=True)
+    language = Column(String(50), default='English')
+    document_type = Column(String(100), default='Registered Sale Deed')
     timestamp = Column(DateTime, default=datetime.utcnow)
 
 class AuditLog(Base):

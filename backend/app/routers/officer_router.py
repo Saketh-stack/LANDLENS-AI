@@ -1,4 +1,4 @@
-﻿import os
+import os
 import shutil
 from typing import Optional, List
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
@@ -25,63 +25,14 @@ class RecordApprovalRequest(BaseModel):
     remarks: Optional[str] = "Officer verification completed"
     corrections: Optional[List[FieldCorrectionRequest]] = []
 
+@router.get("/metrics")
 @router.get("/dashboard-metrics")
 def get_dashboard_metrics(db: Session = Depends(get_db)):
     """
     Officer Dashboard Cards & Key Metrics matching SIH Specifications
     """
-    total_records = db.query(LandRecord).count()
-    approved = db.query(LandRecord).filter(LandRecord.status.in_(["APPROVED", "PUBLISHED"])).count()
-    pending = db.query(LandRecord).filter(LandRecord.status.in_(["OFFICER_REVIEW", "VALIDATION_PENDING"])).count()
-    low_conf = db.query(LandRecord).filter(LandRecord.status == "LOW_CONFIDENCE").count()
-    val_errors = db.query(LandRecord).filter(LandRecord.status == "VALIDATION_FAILED").count()
-    new_regs = db.query(Registration).filter(Registration.status != "PUBLISHED").count()
-
-    # Dynamic metrics showing realistic baseline + live counts
-    return {
-        "cards": {
-            "total_land_records": 12450 + total_records - 8,
-            "digitized": 9840 + approved - 5,
-            "pending_verification": 342 + pending - 1,
-            "approved_records": 9210 + approved - 5,
-            "rejected_records": 48,
-            "low_confidence_records": 103 + low_conf - 1,
-            "validation_errors": 185 + val_errors - 1,
-            "new_registrations": 128 + new_regs,
-            "average_ocr_accuracy": "94.2%",
-            "target_processing_time": "2-3 days (Proposed Target)"
-        },
-        "charts": {
-            "daily_processing": [
-                {"day": "Mon", "processed": 420, "approved": 395, "flagged": 25},
-                {"day": "Tue", "processed": 465, "approved": 440, "flagged": 25},
-                {"day": "Wed", "processed": 510, "approved": 480, "flagged": 30},
-                {"day": "Thu", "processed": 490, "approved": 460, "flagged": 30},
-                {"day": "Fri", "processed": 580, "approved": 550, "flagged": 30},
-                {"day": "Sat", "processed": 310, "approved": 298, "flagged": 12},
-                {"day": "Sun", "processed": 180, "approved": 175, "flagged": 5}
-            ],
-            "district_progress": [
-                {"district": "Bhopal", "total": 4200, "digitized": 3950, "accuracy": 95.1},
-                {"district": "Indore", "total": 3800, "digitized": 3420, "accuracy": 94.8},
-                {"district": "Jabalpur", "total": 2900, "digitized": 2600, "accuracy": 93.6},
-                {"district": "Gwalior", "total": 2400, "digitized": 2100, "accuracy": 92.9},
-                {"district": "Ujjain", "total": 1950, "digitized": 1720, "accuracy": 94.2}
-            ],
-            "ocr_confidence_distribution": [
-                {"tier": "High Confidence (>80%)", "count": 8920, "color": "#10B981"},
-                {"tier": "Medium Confidence (60-80%)", "count": 780, "color": "#F59E0B"},
-                {"tier": "Low Confidence (<60%)", "count": 140, "color": "#EF4444"}
-            ]
-        },
-        "recent_activity": [
-            {"reg_id": "REG2026/00125", "owner": "Ravi Kumar", "date": "01-09-2026", "status": "Approved", "type": "Sale Deed"},
-            {"reg_id": "REG2026/00124", "owner": "Suresh Patel", "date": "01-09-2026", "status": "Approved", "type": "Sale Deed"},
-            {"reg_id": "REG2026/00140", "owner": "Devendra Meena", "date": "05-09-2026", "status": "Pending Verification", "type": "Khatauni"},
-            {"reg_id": "REG2026/00142", "owner": "Bhanu Pratap Singh", "date": "06-09-2026", "status": "Low Confidence", "type": "Cadastral"},
-            {"reg_id": "REG2026/00145", "owner": "Gopal Krishna", "date": "07-09-2026", "status": "Validation Discrepancy", "type": "New Reg"}
-        ]
-    }
+    from backend.app.services.dashboard_service import DashboardService
+    return DashboardService.get_metrics(db)
 
 @router.get("/verification-queue")
 def get_verification_queue(db: Session = Depends(get_db)):

@@ -18,7 +18,7 @@ class LandRecordService:
         limit: int = 50
     ) -> List[LandRecord]:
         query = db.query(LandRecord).filter(
-            LandRecord.status.in_(["APPROVED", "PUBLISHED"]),
+            LandRecord.status.in_(["APPROVED", "PUBLISHED", "USER_VERIFIED"]),
             LandRecord.is_public == True
         )
 

@@ -98,8 +98,10 @@ class LanguageDetectionService:
         return {
             "primary_code": primary["code"],
             "primary_name": primary["name"],
+            "primary_language": primary["name"],
             "primary_script": primary.get("script", "Unknown"),
             "is_mixed": is_mixed,
+            "is_multilingual": is_mixed or primary["code"] != "en",
             "summary": summary,
             "distributions": dists,
             "scripts": list({d["script"] for d in dists if "script" in d})

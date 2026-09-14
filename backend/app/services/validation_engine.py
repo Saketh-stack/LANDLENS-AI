@@ -1,4 +1,4 @@
-﻿import re
+import re
 from datetime import datetime
 from typing import Dict, Any, List
 from sqlalchemy.orm import Session
@@ -159,8 +159,11 @@ class ValidationEngineService:
             if diff > 0.02:  # mismatch greater than tolerance
                 results.append({
                     'rule_id': 'RULE-07',
+                    'rule': 'CADASTRAL_AREA_MATCH',
                     'rule_name': 'Cadastral Database Cross-Verification',
                     'status': 'WARNING',
+                    'severity': 'ERROR',
+                    'requires_review': True,
                     'message': f"Area mismatch: Extracted Record = {area:.2f} Acres, Cadastral Database = {cad_area:.2f} Acres (Delta: {diff:.2f} Acres)",
                     'details': {
                         'extracted_area': area,
@@ -223,3 +226,5 @@ class ValidationEngineService:
             'has_warnings': has_warnings,
             'results': results
         }
+
+ValidationEngine = ValidationEngineService

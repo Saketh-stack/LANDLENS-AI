@@ -22,6 +22,9 @@ const SplitScreenVerificationPage = () => {
   const [fieldValues, setFieldValues] = useState({});
   const [savedValues, setSavedValues] = useState({});
   const [originalValues, setOriginalValues] = useState({});
+  const [selectedFieldName, setSelectedFieldName] = useState(null);
+  const [imageNaturalSize, setImageNaturalSize] = useState({ width: 0, height: 0 });
+  const [correctionReasons, setCorrectionReasons] = useState({});
 
   // Editing UI States
   const [isBulkEditing, setIsBulkEditing] = useState(true); // Always editable by default
@@ -77,43 +80,44 @@ const SplitScreenVerificationPage = () => {
       if (!demoData) {
         demoData = {
           record: {
-            id: id || 1,
-            registration_number: 'REG-2026/SRO/4481',
-            owner_name: 'Rangineni Venkateshwar Rao',
-            father_husband_name: 'Late Ammaiah Rao',
-            survey_number: '101/2B',
-            land_area: 2.40,
-            land_classification: 'Agricultural (Dry Crop)',
-            plot_number: 'P-101/2',
-            state: 'Madhya Pradesh',
-            district: 'Bhopal',
-            tehsil: 'Huzur',
-            village: 'Rampur Kalan',
+            id: id || 86,
+            registration_number: 'DOS-2023-AP-0125',
+            owner_name: 'Smt. Lakshmi Devi',
+            father_husband_name: 'D/o. Subba Rao',
+            survey_number: '125/2',
+            land_area: 2.50,
+            land_classification: 'Agricultural Land',
+            plot_number: 'Survey Plot 125/2',
+            state: 'Andhra Pradesh',
+            district: 'Kurnool',
+            tehsil: 'Kurnool',
+            village: 'Vemula',
             document_type: 'Registered Sale Deed',
-            confidence_score: 95.5,
+            confidence_score: 96.0,
             status: 'OFFICER_REVIEW'
           },
-        extracted_fields: [
-          { id: 1, field_name: 'owner_name', label: 'Owner Name', category: 'Land Owner Details', original_ocr_value: 'Kailash Nath Verma', final_value: 'Kailash Nath Verma', confidence: 96, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
-          { id: 2, field_name: 'father_husband_name', label: "Father's / Mother's Name", category: 'Land Owner Details', original_ocr_value: 'Late Ramchandra Verma', final_value: 'Late Ramchandra Verma', confidence: 91, confidence_tier: 'HIGH', is_required: false, validation_type: 'text' },
-          { id: 3, field_name: 'survey_number', label: 'Survey Number', category: 'Land Details', original_ocr_value: '101/2B', final_value: '101/2B', confidence: 94, confidence_tier: 'HIGH', is_required: true, validation_type: 'survey_number' },
-          { id: 4, field_name: 'land_area', label: 'Land Area (Acres)', category: 'Land Details', original_ocr_value: '2.45', final_value: '2.40', confidence: 58, confidence_tier: 'LOW', needs_verification: true, is_required: true, validation_type: 'numeric' },
-          { id: 5, field_name: 'land_classification', label: 'Land Type / Classification', category: 'Land Details', original_ocr_value: 'Agricultural (Dry Crop)', final_value: 'Agricultural (Dry Crop)', confidence: 88, confidence_tier: 'HIGH', is_required: false, validation_type: 'text' },
-          { id: 6, field_name: 'state', label: 'State', category: 'Location Details', original_ocr_value: 'Madhya Pradesh', final_value: 'Madhya Pradesh', confidence: 99, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
-          { id: 7, field_name: 'district', label: 'District', category: 'Location Details', original_ocr_value: 'Bhopal', final_value: 'Bhopal', confidence: 97, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
-          { id: 8, field_name: 'village', label: 'Village', category: 'Location Details', original_ocr_value: 'Rampur Kalan', final_value: 'Rampur Kalan', confidence: 95, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
-          { id: 9, field_name: 'document_number', label: 'Document / Order Number', category: 'Document Details', original_ocr_value: 'REG-2026-MP-002', final_value: 'REG-2026-MP-002', confidence: 92, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
-        ],
-        documents: [],
-        cadastral_crosscheck: {
-          exists_in_cadastral: true,
-          cadastral_owner: 'Kailash Nath Verma',
-          cadastral_area: 2.40,
-          area_mismatch: true,
-          area_delta: 0.05
-        }
-      };
-    }
+          extracted_fields: [
+            { id: 1, field_name: 'owner_name', label: 'Purchaser / Landowner', category: 'Land Owner Details', original_ocr_value: 'Smt. Lakshmi Devi', final_value: 'Smt. Lakshmi Devi', confidence: 98, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
+            { id: 2, field_name: 'previous_owner', label: 'Seller / Vendor Name', category: 'Land Owner Details', original_ocr_value: 'Sri. Ramesh Kumar', final_value: 'Sri. Ramesh Kumar', confidence: 96, confidence_tier: 'HIGH', is_required: false, validation_type: 'text' },
+            { id: 3, field_name: 'father_husband_name', label: "Father's / Husband's Name", category: 'Land Owner Details', original_ocr_value: 'D/o. Subba Rao', final_value: 'D/o. Subba Rao', confidence: 94, confidence_tier: 'HIGH', is_required: false, validation_type: 'text' },
+            { id: 4, field_name: 'survey_number', label: 'Survey / Khasra Number', category: 'Land Details', original_ocr_value: '125/2', final_value: '125/2', confidence: 99, confidence_tier: 'HIGH', is_required: true, validation_type: 'survey_number' },
+            { id: 5, field_name: 'land_area', label: 'Land Area (Acres)', category: 'Land Details', original_ocr_value: '2.50', final_value: '2.50', confidence: 95, confidence_tier: 'HIGH', needs_verification: false, is_required: true, validation_type: 'numeric' },
+            { id: 6, field_name: 'land_classification', label: 'Land Classification', category: 'Land Details', original_ocr_value: 'Agricultural Land', final_value: 'Agricultural Land', confidence: 92, confidence_tier: 'HIGH', is_required: false, validation_type: 'text' },
+            { id: 7, field_name: 'state', label: 'State', category: 'Location Details', original_ocr_value: 'Andhra Pradesh', final_value: 'Andhra Pradesh', confidence: 99, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
+            { id: 8, field_name: 'district', label: 'District', category: 'Location Details', original_ocr_value: 'Kurnool', final_value: 'Kurnool', confidence: 98, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
+            { id: 9, field_name: 'village', label: 'Village / Mouza', category: 'Location Details', original_ocr_value: 'Vemula', final_value: 'Vemula', confidence: 97, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
+            { id: 10, field_name: 'document_number', label: 'Document Registration No', category: 'Document Details', original_ocr_value: 'DOS-2023-AP-0125', final_value: 'DOS-2023-AP-0125', confidence: 96, confidence_tier: 'HIGH', is_required: true, validation_type: 'text' },
+          ],
+          documents: [],
+          cadastral_crosscheck: {
+            exists_in_cadastral: true,
+            cadastral_owner: 'Smt. Lakshmi Devi',
+            cadastral_area: 2.50,
+            area_mismatch: false,
+            area_delta: 0.0
+          }
+        };
+      }
 
       setData(demoData);
       const fVals = {};
@@ -201,6 +205,54 @@ const SplitScreenVerificationPage = () => {
     }).length;
   }, [data, fieldValues]);
 
+  // Active selected field for interactive bounding box overlay
+  const selectedField = useMemo(() => {
+    if (!selectedFieldName || !data?.extracted_fields) return null;
+    return data.extracted_fields.find(f => f.field_name === selectedFieldName);
+  }, [selectedFieldName, data]);
+
+  // Compute normalized bounding box styling for document overlay
+  const getBBoxStyle = (bbox) => {
+    if (!bbox) return null;
+    let x, y, w, h;
+    if (Array.isArray(bbox) && bbox.length >= 4) {
+      // Polygon coords: [[x1, y1], [x2, y2], [x3, y3], [x4, y4]]
+      const xs = bbox.map(p => Array.isArray(p) ? p[0] : (p.x ?? 0));
+      const ys = bbox.map(p => Array.isArray(p) ? p[1] : (p.y ?? 0));
+      x = Math.min(...xs);
+      y = Math.min(...ys);
+      w = Math.max(...xs) - x;
+      h = Math.max(...ys) - y;
+    } else if (typeof bbox === 'object' && bbox.x !== undefined) {
+      x = bbox.x;
+      y = bbox.y;
+      w = bbox.w || bbox.width || 100;
+      h = bbox.h || bbox.height || 30;
+    } else {
+      return null;
+    }
+
+    // If coordinates are already normalized percentages (0.0 to 1.0)
+    if (x <= 1.0 && y <= 1.0 && w <= 1.0) {
+      return {
+        left: `${Math.max(0, x * 100)}%`,
+        top: `${Math.max(0, y * 100)}%`,
+        width: `${Math.min(100, w * 100)}%`,
+        height: `${Math.min(100, h * 100)}%`
+      };
+    }
+
+    // If coordinates are pixel dimensions from native scan
+    const natW = imageNaturalSize.width || 1000;
+    const natH = imageNaturalSize.height || 1400;
+    return {
+      left: `${(x / natW) * 100}%`,
+      top: `${(y / natH) * 100}%`,
+      width: `${(w / natW) * 100}%`,
+      height: `${(h / natH) * 100}%`
+    };
+  };
+
   // Handle Save Changes (Draft)
   const handleSaveChanges = async () => {
     try {
@@ -268,7 +320,7 @@ const SplitScreenVerificationPage = () => {
       }
 
       setShowConfirmModal(false);
-      setActionSuccessMessage('Record successfully confirmed and marked as "User Verified"!');
+      setActionSuccessMessage('Record successfully confirmed and marked as "User Verified"! Returning to queue...');
       setData(prev => prev ? {
         ...prev,
         record: {
@@ -290,10 +342,26 @@ const SplitScreenVerificationPage = () => {
           }
         }
       } catch (storageErr) {}
+
+      // Automatically navigate back to verification queue
+      setTimeout(() => {
+        if (window.history.length > 1) {
+          navigate(-1);
+        } else {
+          navigate('/officer/verification-queue');
+        }
+      }, 900);
     } catch (err) {
       console.error('Error verifying record:', err);
       setShowConfirmModal(false);
-      setActionSuccessMessage('Record successfully confirmed and marked as "User Verified"!');
+      setActionSuccessMessage('Record successfully confirmed and marked as "User Verified"! Returning to queue...');
+      setTimeout(() => {
+        if (window.history.length > 1) {
+          navigate(-1);
+        } else {
+          navigate('/officer/verification-queue');
+        }
+      }, 900);
     } finally {
       setSubmitting(false);
     }
@@ -620,11 +688,29 @@ const SplitScreenVerificationPage = () => {
             </div>
           </div>
 
+          {/* Active Field Inspection Banner */}
+          {selectedField && (
+            <div className="bg-amber-500/20 border-b border-amber-500/40 text-amber-200 px-4 py-2 text-xs flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                <span>
+                  Inspecting Field: <strong className="text-amber-100">{selectedField.field_label || selectedField.field_name}</strong>
+                </span>
+                <span className="font-mono text-[10px] bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded border border-amber-400/30">
+                  {selectedField.confidence || 90}% {selectedField.confidence_tier || 'HIGH'}
+                </span>
+              </div>
+              <div className="text-[11px] font-mono text-amber-300/80 truncate max-w-[280px]">
+                {selectedField.source_text ? `Source: "${selectedField.source_text}"` : `Value: "${fieldValues[selectedField.field_name] || selectedField.extracted_value}"`}
+              </div>
+            </div>
+          )}
+
           {/* Viewer Body */}
           <div className="flex-1 bg-slate-900/90 p-4 overflow-auto flex items-center justify-center relative">
             {docViewerMode === 'ORIGINAL' && isImageFile && primaryDoc?.file_path ? (
               <div 
-                className="transition-transform duration-200 ease-out origin-center flex items-center justify-center shadow-2xl"
+                className="relative transition-transform duration-200 ease-out origin-center flex items-center justify-center shadow-2xl"
                 style={{
                   transform: `scale(${zoomLevel}) rotate(${rotation}deg)`
                 }}
@@ -632,8 +718,32 @@ const SplitScreenVerificationPage = () => {
                 <img
                   src={primaryDoc.file_path}
                   alt="Original Land Document"
-                  className="max-w-full max-h-[85vh] object-contain rounded-lg border border-slate-700 bg-white"
+                  onLoad={(e) => {
+                    setImageNaturalSize({
+                      width: e.target.naturalWidth || 1000,
+                      height: e.target.naturalHeight || 1400
+                    });
+                  }}
+                  className="max-w-full max-h-[85vh] object-contain rounded-lg border border-slate-700 bg-white block"
                 />
+
+                {/* Visual Bounding Box Overlay for Focused Field */}
+                {selectedField && selectedField.bounding_box && (
+                  (() => {
+                    const bStyle = getBBoxStyle(selectedField.bounding_box);
+                    if (!bStyle) return null;
+                    return (
+                      <div
+                        className="absolute border-2 border-amber-400 bg-amber-400/30 rounded pointer-events-none shadow-[0_0_15px_rgba(251,191,36,0.7)] animate-pulse z-20"
+                        style={bStyle}
+                      >
+                        <span className="absolute -top-6 left-0 bg-amber-500 text-slate-950 font-black text-[9px] px-1.5 py-0.5 rounded shadow-md whitespace-nowrap">
+                          📍 {selectedField.field_label || selectedField.field_name} ({selectedField.confidence || 0}%)
+                        </span>
+                      </div>
+                    );
+                  })()
+                )}
               </div>
             ) : docViewerMode === 'ORIGINAL' && isPdfFile && primaryDoc?.file_path ? (
               <div className="w-full h-full rounded-xl overflow-hidden border border-slate-700 bg-white shadow-xl">
@@ -811,10 +921,10 @@ const SplitScreenVerificationPage = () => {
                       const errors = fieldValidationMap[field.field_name] || [];
                       const hasError = errors.length > 0;
 
-                      // Confidence Badge styling:
-                      // >= 80%: High (green)
-                      // 60-79%: Medium (yellow)
-                      // < 60%: Low (red, warning)
+                      // Statutory Confidence Badge styling:
+                      // >= 90%: High (green)
+                      // 80-89%: Medium (amber)
+                      // < 80%: Low (rose/red, requires officer review)
                       let confBadge;
                       const isNotFound = currentValue.toLowerCase() === 'not found' || currentValue === '' || currentValue.toLowerCase() === 'n/a';
                       if (isNotFound) {
@@ -824,25 +934,25 @@ const SplitScreenVerificationPage = () => {
                             Not in document
                           </span>
                         );
-                      } else if (conf >= 80) {
+                      } else if (conf >= 90) {
                         confBadge = (
                           <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1 font-mono">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            {conf}% High
+                            {conf}% HIGH
                           </span>
                         );
-                      } else if (conf >= 60) {
+                      } else if (conf >= 80) {
                         confBadge = (
                           <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1 font-mono">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                            {conf}% Medium
+                            {conf}% MEDIUM
                           </span>
                         );
                       } else {
                         confBadge = (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1 font-mono">
-                            <AlertCircle className="w-3 h-3 text-amber-600" />
-                            Needs verification ({conf}%)
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-300 flex items-center gap-1 font-mono animate-pulse">
+                            <AlertCircle className="w-3 h-3 text-rose-600" />
+                            {conf}% LOW (Review Req.)
                           </span>
                         );
                       }
@@ -869,17 +979,22 @@ const SplitScreenVerificationPage = () => {
                         );
                       }
 
+                      const isSelected = selectedFieldName === field.field_name;
+
                       return (
                         <div
                           key={field.field_name}
-                          className={`p-3.5 rounded-xl border transition-all ${
-                            hasError
+                          onClick={() => setSelectedFieldName(field.field_name)}
+                          className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
+                            isSelected
+                              ? 'ring-2 ring-blue-600 border-blue-600 bg-blue-50/40 shadow-sm'
+                              : hasError
                               ? 'bg-rose-50/70 border-rose-300 ring-1 ring-rose-200'
                               : isEdited
-                              ? 'bg-blue-50/50 border-blue-300'
+                              ? 'bg-indigo-50/40 border-indigo-300'
                               : isNotFound
                               ? 'bg-slate-50/60 border-slate-200'
-                              : conf < 60
+                              : conf < 80
                               ? 'bg-amber-50/40 border-amber-300'
                               : 'bg-white border-slate-200 hover:border-slate-300'
                           }`}
@@ -896,6 +1011,11 @@ const SplitScreenVerificationPage = () => {
                                   <span className="text-rose-500 font-bold" title="Required field">*</span>
                                 )}
                               </label>
+                              {field.bounding_box && (
+                                <span className="text-[9px] font-mono text-blue-800 bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200" title="Visual coordinates detected in original document">
+                                  📍 BBox
+                                </span>
+                              )}
                             </div>
 
                             <div className="flex items-center gap-2">
@@ -910,23 +1030,49 @@ const SplitScreenVerificationPage = () => {
                               id={`input-${field.field_name}`}
                               type="text"
                               value={currentValue}
+                              onFocus={() => setSelectedFieldName(field.field_name)}
                               onChange={(e) => handleFieldValueChange(field.field_name, e.target.value)}
                               placeholder={`Enter ${field.field_label}...`}
                               className={`w-full px-3 py-2 text-xs font-semibold rounded-lg border transition-colors bg-white font-mono ${
                                 hasError 
                                   ? 'border-rose-400 focus:ring-2 focus:ring-rose-400 text-rose-950'
                                   : isEdited
-                                  ? 'border-blue-500 focus:ring-2 focus:ring-blue-500 text-blue-950'
+                                  ? 'border-indigo-500 focus:ring-2 focus:ring-indigo-500 text-indigo-950'
                                   : 'border-slate-300 focus:ring-2 focus:ring-blue-900 text-slate-900'
                               }`}
                             />
                           </div>
+
+                          {/* Source OCR Text snippet if available */}
+                          {field.source_text && (
+                            <div className="mt-1.5 text-[10px] text-slate-500 bg-slate-50 p-1.5 rounded font-mono border border-slate-200/70 truncate">
+                              <span className="font-bold text-slate-600">Source OCR:</span> "{field.source_text}"
+                            </div>
+                          )}
 
                           {/* Validation Error Message */}
                           {hasError && (
                             <div className="mt-1.5 text-[11px] font-semibold text-rose-600 flex items-center gap-1">
                               <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                               <span>{errors.join(', ')}</span>
+                            </div>
+                          )}
+
+                          {/* Correction Reason Selector when Edited */}
+                          {isEdited && (
+                            <div className="mt-2 pt-2 border-t border-indigo-100 flex items-center gap-2">
+                              <label className="text-[10px] font-bold text-indigo-900 shrink-0">Correction Reason:</label>
+                              <select
+                                value={correctionReasons[field.field_name] || 'OCR digit error'}
+                                onChange={(e) => setCorrectionReasons(prev => ({ ...prev, [field.field_name]: e.target.value }))}
+                                className="w-full text-[10px] bg-indigo-50/60 border border-indigo-200 rounded px-2 py-1 font-sans text-indigo-950 font-medium"
+                              >
+                                <option value="OCR digit error">OCR digit confusion (0/O, 1/I, 2/Z, etc.)</option>
+                                <option value="Spelling / name correction">Spelling / name correction</option>
+                                <option value="Cadastral baseline alignment">Cadastral baseline alignment</option>
+                                <option value="Sub-division notation formatting">Sub-division notation formatting</option>
+                                <option value="Officer manual verification">Officer manual verification</option>
+                              </select>
                             </div>
                           )}
 

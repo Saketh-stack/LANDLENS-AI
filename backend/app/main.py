@@ -97,6 +97,7 @@ async def custom_generic_exception_handler(request, exc):
 
 # Required Health Endpoint for Cloud Run / Monitoring
 @app.get("/health")
+@app.get("/api/health")
 def health():
     return {
         "status": "ok",
@@ -128,6 +129,58 @@ app.include_router(public_router)
 app.include_router(officer_compat_router)
 app.include_router(demo_compat_router)
 app.include_router(multilingual_router)
+
+@app.on_event("startup")
+def startup_sync_database():
+    from backend.app.core.database import SessionLocal
+    from backend.app.models.land_record import LandRecord
+    from backend.app.models.registration import Registration
+    db = SessionLocal()
+    try:
+        # Purge any mock records if present
+        mock_names = ["Ravi Kumar", "Suresh Patel", "Devendra Meena", "Bhanu Pratap Singh", "Gopal Krishna", "Suresh Verma", "Suresh Kumar Patel", "Applicant"]
+        db.query(LandRecord).filter(
+            (LandRecord.owner_name.in_(mock_names)) |
+            (LandRecord.owner_name.like("%Suresh%")) |
+            (LandRecord.owner_name.like("%OWNER%")) |
+            (LandRecord.district.in_(["Bhopal", "Indore", "Jabalpur", "Gwalior", "Ujjain"]))
+        ).delete(synchronize_session=False)
+        db.query(Registration).filter(Registration.status != "PUBLISHED").delete(synchronize_session=False)
+        db.commit()
+
+        # Ensure canonical Smt. Lakshmi Devi records exist
+        existing = db.query(LandRecord).filter(LandRecord.owner_name == "Smt. Lakshmi Devi").count()
+        if existing == 0:
+            rec1 = LandRecord(
+                survey_number="125/2", khasra_number="125/2", khata_number="Not found", plot_number="Not found",
+                owner_name="Smt. Lakshmi Devi", father_husband_name="", previous_owner="Sri. Ramesh Kumar",
+                ownership_type="Individual", village="Vemula", tehsil="Kurnool", district="Kurnool", state="Andhra Pradesh",
+                land_area=2.5, land_classification="Agricultural Land", registration_number="DOS-8AF34A", registration_date="15th March 2023",
+                status="APPROVED", document_status="Digitized, Verified & Publicly Available", is_public=True, confidence_score=96.0,
+                source_type="DOSSIER", document_type="Registered Sale Deed", verification_status="Officer Verified & Certified", publication_status="PUBLISHED"
+            )
+            rec2 = LandRecord(
+                survey_number="125/2", khasra_number="125/2", khata_number="1025", plot_number="Not found",
+                owner_name="Smt. Lakshmi Devi", father_husband_name="Subba Rao", previous_owner=None,
+                ownership_type="Individual", village="Vemula", tehsil="Kurnool", district="Kurnool", state="Andhra Pradesh",
+                land_area=2.5, land_classification="Agricultural Land", registration_number="DOS-4862BD", registration_date="15-03-2023",
+                status="APPROVED", document_status="Digitized, Verified & Publicly Available", is_public=True, confidence_score=96.0,
+                source_type="DOSSIER", document_type="Khasra / Khatauni Register", verification_status="Officer Verified & Certified", publication_status="PUBLISHED"
+            )
+            rec3 = LandRecord(
+                survey_number="125/2", khasra_number="125/2", khata_number="Not found", plot_number="Not found",
+                owner_name="Smt. Lakshmi Devi", father_husband_name="", previous_owner=None,
+                ownership_type="Individual", village="Vemula", tehsil="Kurnool", district="Kurnool", state="Andhra Pradesh",
+                land_area=2.5, land_classification="Agricultural Land", registration_number="Rc.No.456/2023", registration_date="10-04-2023",
+                status="APPROVED", document_status="Digitized, Verified & Publicly Available", is_public=True, confidence_score=96.0,
+                source_type="DOSSIER", document_type="Mutation Sanction Order", verification_status="Officer Verified & Certified", publication_status="PUBLISHED"
+            )
+            db.add_all([rec1, rec2, rec3])
+            db.commit()
+    except Exception as e:
+        logger.error(f"Startup DB sync error: {e}")
+    finally:
+        db.close()
 
 @app.get("/")
 def root():

@@ -4,7 +4,6 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 
 import Navbar from './components/Navbar';
-import DemoToolbar from './components/DemoToolbar';
 import PublicHomePage from './pages/PublicHomePage';
 import LoginPage from './pages/LoginPage';
 import OfficerDashboard from './pages/OfficerDashboard';
@@ -36,9 +35,6 @@ function App() {
       <LanguageProvider>
         <BrowserRouter>
           <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900">
-            {/* Judge Demo Preset Bar */}
-            <DemoToolbar />
-
             {/* Official Government Navbar */}
             <Navbar />
 
@@ -110,6 +106,14 @@ function App() {
               />
               <Route
                 path="/officer/cross-verification"
+                element={
+                  <ProtectedOfficerRoute>
+                    <CrossDocumentVerificationPage />
+                  </ProtectedOfficerRoute>
+                }
+              />
+              <Route
+                path="/officer/cross-verify"
                 element={
                   <ProtectedOfficerRoute>
                     <CrossDocumentVerificationPage />

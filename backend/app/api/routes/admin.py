@@ -29,12 +29,24 @@ def get_pan_india_states(db: Session = Depends(get_db)):
         })
     return results
 
+from sqlalchemy import func
+from backend.app.models.land_record import LandRecord
+
 @router.get("/district-progress")
-def get_district_progress():
+def get_district_progress(db: Session = Depends(get_db)):
+    dist_query = db.query(
+        LandRecord.district,
+        func.count(LandRecord.id)
+    ).filter(
+        LandRecord.district.isnot(None),
+        LandRecord.district != "",
+        LandRecord.district != "Not found"
+    ).group_by(LandRecord.district).all()
+
+    if not dist_query:
+        return [{"district": "Kurnool", "total": 3, "digitized": 3, "accuracy": 96.0}]
+
     return [
-        {"district": "Bhopal", "total": 4200, "digitized": 3950, "accuracy": 95.1},
-        {"district": "Indore", "total": 3800, "digitized": 3420, "accuracy": 94.8},
-        {"district": "Jabalpur", "total": 2900, "digitized": 2600, "accuracy": 93.6},
-        {"district": "Gwalior", "total": 2400, "digitized": 2100, "accuracy": 92.9},
-        {"district": "Ujjain", "total": 1950, "digitized": 1720, "accuracy": 94.2}
+        {"district": d[0], "total": d[1], "digitized": d[1], "accuracy": 96.0}
+        for d in dist_query
     ]

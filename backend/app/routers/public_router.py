@@ -1,7 +1,7 @@
-﻿from typing import Optional
+from typing import Optional
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from backend.app.database import  get_db
 from backend.app.models import  LandRecord, AuditLog
 
@@ -126,14 +126,28 @@ def get_public_record_details(record_id: int, db: Session = Depends(get_db)):
 
 @router.get("/stats")
 def get_public_stats(db: Session = Depends(get_db)):
-    approved_count = db.query(LandRecord).filter(LandRecord.status.in_(["APPROVED", "PUBLISHED"])).count()
+    approved_count = db.query(LandRecord).filter(
+        LandRecord.status.in_(["APPROVED", "PUBLISHED", "USER_VERIFIED"]),
+        LandRecord.is_public == True
+    ).count()
+    districts_count = db.query(func.count(func.distinct(LandRecord.district))).filter(
+        LandRecord.district.isnot(None),
+        LandRecord.district != "",
+        LandRecord.district != "Not found"
+    ).scalar() or 1
+    villages_count = db.query(func.count(func.distinct(LandRecord.village))).filter(
+        LandRecord.village.isnot(None),
+        LandRecord.village != "",
+        LandRecord.village != "Not found"
+    ).scalar() or 1
+
     return {
         "portal_name": "Digital Land Records Portal",
         "subtitle": "AI-Powered Land Record Digitization and Validation System",
         "department": "Department of Land Resources (DoLR), Ministry of Rural Development",
-        "total_digitized_approved": 9210 + approved_count - 5,
-        "districts_covered": 52,
-        "villages_digitized": 12450,
+        "total_digitized_approved": approved_count,
+        "districts_covered": districts_count,
+        "villages_digitized": villages_count,
         "average_verification_time_days": "2-3 Days (Prototype Target)",
         "service_guarantee_notice": "Proposed system target: Verified registration records made available for public viewing within 2-3 days."
     }
