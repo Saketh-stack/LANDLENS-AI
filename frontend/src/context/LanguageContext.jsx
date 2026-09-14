@@ -20,7 +20,7 @@ export const SUPPORTED_LANGUAGES = [
 // Multilingual UI Translation Dictionary
 const UI_TRANSLATIONS = {
   en: {
-    portal_title: "Digital Land Records Portal",
+    portal_title: "LandLens-AI",
     ministry_sub: "Ministry of Rural Development • Gov of India",
     search_records: "Search Records",
     registration_status: "Registration Status",
@@ -28,7 +28,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "Officer Workspace",
     login: "Officer Login",
     logout: "Sign Out",
-    hero_headline: "Digital Land Records Portal",
+    hero_headline: "LandLens-AI",
     hero_sub: "AI-Powered Multilingual Land Record Digitization & Validation. Search, verify, and view official Record of Rights (RoR) certified across India.",
     search_placeholder: "Search by Owner Name, Survey Number, Village, or District in any Indian Language...",
     search_btn: "Search Records",
@@ -52,7 +52,7 @@ const UI_TRANSLATIONS = {
     legal_disclaimer: "Legal Factuality Notice: Ownership and boundaries legally reside in the original registered document."
   },
   hi: {
-    portal_title: "डिजिटल भू-अभिलेख पोर्टल",
+    portal_title: "LandLens-AI",
     ministry_sub: "ग्रामीण विकास मंत्रालय • भारत सरकार",
     search_records: "अभिलेख खोजें",
     registration_status: "पंजीकरण स्थिति",
@@ -60,7 +60,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "अधिकारी कार्यक्षेत्र",
     login: "अधिकारी लॉगिन",
     logout: "लॉगआउट",
-    hero_headline: "डिजिटल भू-अभिलेख पोर्टल",
+    hero_headline: "LandLens-AI",
     hero_sub: "एआई-संचालित बहुभाषी भू-अभिलेख डिजिटलीकरण और सत्यापन प्रणाली। भारत भर में प्रमाणित खतौनी/अधिकार अभिलेख खोजें और देखें।",
     search_placeholder: "भू-स्वामी का नाम, सर्वे संख्या, गाँव या ज़िला किसी भी भारतीय भाषा में खोजें...",
     search_btn: "अभिलेख खोजें",
@@ -84,7 +84,7 @@ const UI_TRANSLATIONS = {
     legal_disclaimer: "कानूनी सूचना: प्रमाणित स्वामित्व और सीमाएं मूल पंजीकृत दस्तावेज़ के अनुसार ही मान्य हैं।"
   },
   te: {
-    portal_title: "డిజిటల్ భూ రికార్డుల పోర్టల్",
+    portal_title: "LandLens-AI",
     ministry_sub: "గ్రామీణాభివృద్ధి మంత్రిత్వ శాఖ • భారత ప్రభుత్వం",
     search_records: "రికార్డులు వెతకండి",
     registration_status: "రిజిస్ట్రేషన్ స్థితి",
@@ -92,7 +92,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "అధికారి వర్క్‌స్పేస్",
     login: "అధికారి లాగిన్",
     logout: "లాగ్అవుట్",
-    hero_headline: "డిజిటల్ భూ రికార్డుల పోర్టల్",
+    hero_headline: "LandLens-AI",
     hero_sub: "AI ఆధారిత బహుభాషా భూ రికార్డుల డిజిటలైజేషన్ మరియు ధృవీకరణ వ్యవస్థ. దేశవ్యాప్తంగా ధృవీకరించబడిన పట్టాదారు హక్కుల రికార్డులు (RoR) చూడండి.",
     search_placeholder: "భూయజమాని పేరు, సర్వే నంబరు, గ్రామం లేదా జిల్లా పేరుతో వెతకండి...",
     search_btn: "వెతకండి",
@@ -116,7 +116,7 @@ const UI_TRANSLATIONS = {
     legal_disclaimer: "చట్టపరమైన నోటీసు: యాజమాన్య హక్కులు మరియు సరిహద్దులు అసలు రిజిస్టర్డ్ పత్రం ప్రకారమే చెల్లుబాటు అవుతాయి."
   },
   ta: {
-    portal_title: "டிஜிட்டல் நில ஆவணங்கள் தளம்",
+    portal_title: "LandLens-AI",
     ministry_sub: "ஊரக வளர்ச்சி அமைச்சகம் • இந்திய அரசு",
     search_records: "ஆவணங்கள் தேட",
     registration_status: "பதிவு நிலை",
@@ -124,7 +124,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "அதிகாரி பணிப்பகுதி",
     login: "அதிகாரி உள்நுழைவு",
     logout: "வெளியேறு",
-    hero_headline: "டிஜிட்டல் நில ஆவணங்கள் தளம்",
+    hero_headline: "LandLens-AI",
     hero_sub: "AI அடிப்படையிலான பலமொழி நில ஆவணமயமாக்கல் மற்றும் சரிபார்ப்பு அமைப்பு. பட்டா சிட்டா ஆவணங்களைத் தேடலாம்.",
     search_placeholder: "நில உரிமையாளர் பெயர், சர்வே எண், கிராமம் அல்லது மாவட்டம் உள்ளிடவும்...",
     search_btn: "தேடுக",
@@ -148,7 +148,7 @@ const UI_TRANSLATIONS = {
     legal_disclaimer: "சட்ட அறிவிப்பு: அசல் பதிவு செய்யப்பட்ட ஆவணமே சட்டபூர்வமானது."
   },
   mr: {
-    portal_title: "डिजिटल भू-अभिलेख पोर्टल",
+    portal_title: "LandLens-AI",
     ministry_sub: "ग्रामविकास मंत्रालय • भारत सरकार",
     search_records: "अभिलेख शोधा",
     registration_status: "नोंदणी स्थिती",
@@ -156,7 +156,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "अधिकारी कार्यक्षेत्र",
     login: "अधिकारी लॉगिन",
     logout: "लॉगआउट",
-    hero_headline: "डिजिटल भू-अभिलेख पोर्टल",
+    hero_headline: "LandLens-AI",
     hero_sub: "एआय-चालित बहुभाषिक जमीन नोंद डिजिटायझेशन प्रणाली. प्रमाणित ७/१२ व फेरफार अभिलेख शोधा.",
     search_placeholder: "खातेदाराचे नाव, गट क्रमांक / सर्व्हे नंबर, गाव किंवा जिल्हा शोधा...",
     search_btn: "शोध घ्या",
@@ -180,7 +180,7 @@ const UI_TRANSLATIONS = {
     legal_disclaimer: "कायदेशीर सूचना: मूळ नोंदणीकृत दस्तऐवजच कायदेशीररित्या ग्राह्य मानला जाईल."
   },
   kn: {
-    portal_title: "ಡಿಜಿಟಲ್ ಭೂ ದಾಖಲೆಗಳ ಪೋರ್ಟಲ್",
+    portal_title: "LandLens-AI",
     ministry_sub: "ಗ್ರಾಮೀಣಾಭಿವೃದ್ಧಿ ಸಚಿವಾಲಯ • ಭಾರತ ಸರ್ಕಾರ",
     search_records: "ದಾಖಲೆ ಹುಡುಕಿ",
     registration_status: "ನೋಂದಣಿ ಸ್ಥಿತಿ",
@@ -188,7 +188,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "ಅಧಿಕಾರಿ ಕಾರ್ಯಕ್ಷೇತ್ರ",
     login: "ಅಧಿಕಾರಿ ಲಾಗಿನ್",
     logout: "ನಿರ್ಗಮಿಸಿ",
-    hero_headline: "ಡಿಜಿಟಲ್ ಭೂ ದಾಖಲೆಗಳ ಪೋರ್ಟಲ್",
+    hero_headline: "LandLens-AI",
     hero_sub: "AI ಆಧಾರಿತ ಬಹುಭಾಷಾ ಭೂ ದಾಖಲೆಗಳ ಗಣಕೀಕರಣ ವ್ಯವಸ್ಥೆ. ಪಹಣಿ ಹಾಗೂ ಆರ್‌ಒಆರ್ ದಾಖಲೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ.",
     search_placeholder: "ಭೂಮಾಲೀಕರ ಹೆಸರು, ಸರ್ವೆ ನಂಬರ್, ಗ್ರಾಮ ಅಥವಾ ಜಿಲ್ಲೆ ನಮೂದಿಸಿ...",
     search_btn: "ಹುಡುಕಿ",
@@ -212,7 +212,7 @@ const UI_TRANSLATIONS = {
     legal_disclaimer: "ಕಾನೂನು ಸೂಚನೆ: ಮೂಲ ನೋಂದಾಯಿತ ದಾಖಲೆಯು ಮಾತ್ರ ಕಾನೂನುಬದ್ಧವಾಗಿರುತ್ತದೆ."
   },
   bn: {
-    portal_title: "ডিজিটাল জমির রেকর্ড পোর্টাল",
+    portal_title: "LandLens-AI",
     ministry_sub: "পল্লী উন্নয়ন মন্ত্রক • ভারত সরকার",
     search_records: "রেকর্ড খুঁজুন",
     registration_status: "নিবন্ধন স্থিতি",
@@ -220,7 +220,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "কর্মকর্তা কর্মক্ষেত্র",
     login: "কর্মকর্তা লগইন",
     logout: "লগআউট",
-    hero_headline: "ডিজিটাল জমির রেকর্ড পোর্টাল",
+    hero_headline: "LandLens-AI",
     hero_sub: "এআই-চালিত বহুভাষিক ভূমি রেকর্ড ডিজিটাইজেশন ব্যবস্থা। ভারত জুড়ে যাচাইকৃত খতিয়ান ও দাগ দেখুন।",
     search_placeholder: "জমির মালিকের নাম, দাগ নম্বর, মৌজা বা জেলা লিখুন...",
     search_btn: "অনুসন্ধান",
@@ -244,7 +244,7 @@ const UI_TRANSLATIONS = {
     legal_disclaimer: "আইনি বিজ্ঞপ্তি: মূল নিবন্ধিত দলিলই আইনত গ্রহণযোগ্য।"
   },
   gu: {
-    portal_title: "ડિજિટલ જમીન રેકોર્ડ્સ પોર્ટલ",
+    portal_title: "LandLens-AI",
     ministry_sub: "ગ્રામીણ વિકાસ મંત્રાલય • ભારત સરકાર",
     search_records: "રેકોર્ડ શોધો",
     registration_status: "નોંધણી સ્થિતિ",
@@ -252,7 +252,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "અધિકારી વર્કસ્પેસ",
     login: "અધિકારી લૉગિન",
     logout: "લૉગ આઉટ",
-    hero_headline: "ડિજિટલ જમીન રેકોર્ડ્સ પોર્ટલ",
+    hero_headline: "LandLens-AI",
     hero_sub: "AI-સંચાલિત બહુભાષીય જમીન દસ્તાવેજ ડિજિટાઇઝેશન. પ્રમાણિત ૭/૧૨ અને ૮-અ રેકોર્ડ શોધો.",
     search_placeholder: "જમીન માલિકનું નામ, સર્વે નંબર, ગામ અથવા જિલ્લો શોધો...",
     search_btn: "શોધો",
@@ -276,7 +276,7 @@ const UI_TRANSLATIONS = {
     legal_disclaimer: "કાનૂની સૂચના: મૂળ નોંધાયેલ દસ્તાવેજ કાયદેસર રીતે માન્ય ગણાશે."
   },
   ml: {
-    portal_title: "ഡിജിറ്റൽ ഭൂമി രേഖകൾ പോർട്ടൽ",
+    portal_title: "LandLens-AI",
     ministry_sub: "ഗ്രാമവികസന മന്ത്രാലയം • ഭാരത സർക്കാർ",
     search_records: "രേഖകൾ തിരയുക",
     registration_status: "രജിസ്ട്രേഷൻ നില",
@@ -284,7 +284,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "ഓഫീസർ വർക്ക്‌സ്‌പേസ്",
     login: "ഓഫീസർ ലോഗിൻ",
     logout: "പുറത്തുകടക്കുക",
-    hero_headline: "ഡിജിറ്റൽ ഭൂമി രേഖകൾ പോർട്ടൽ",
+    hero_headline: "LandLens-AI",
     hero_sub: "AI അടിസ്ഥാനമാക്കിയുള്ള ബഹുഭാഷാ ഭൂമി രേഖാ പരിശോധനാ സംവിധാനം. തണ്ടപ്പേര്, സർവേ രേഖകൾ പരിശോധിക്കാം.",
     search_placeholder: "ഭൂവുടമയുടെ പേര്, സർവേ നമ്പർ, വില്ലേജ് തിരയുക...",
     search_btn: "തിരയുക",
@@ -308,7 +308,7 @@ const UI_TRANSLATIONS = {
     legal_disclaimer: "നിയമപരമായ അറിയിപ്പ്: യഥാർത്ഥ രജിസ്റ്റർ ചെയ്ത രേഖയാണ് സാധുവായിരിക്കുന്നത്."
   },
   pa: {
-    portal_title: "ਡਿਜੀਟਲ ਜ਼ਮੀਨੀ ਰਿਕਾਰਡ ਪੋਰਟਲ",
+    portal_title: "LandLens-AI",
     ministry_sub: "ਪੇਂਡੂ ਵਿਕਾਸ ਮੰਤਰਾਲਾ • ਭਾਰਤ ਸਰਕਾਰ",
     search_records: "ਰਿਕਾਰਡ ਖੋਜੋ",
     registration_status: "ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਸਥਿਤੀ",
@@ -316,7 +316,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "ਅਧਿਕਾਰੀ ਵਰਕਸਪੇਸ",
     login: "ਅਧਿਕਾਰੀ ਲਾਗਇਨ",
     logout: "ਲਾਗਆਉਟ",
-    hero_headline: "ਡਿਜੀਟਲ ਜ਼ਮੀਨੀ ਰਿਕਾਰਡ ਪੋਰਟਲ",
+    hero_headline: "LandLens-AI",
     hero_sub: "AI-ਸੰਚਾਲਿਤ ਬਹੁਭਾਸ਼ਾਈ ਜ਼ਮੀਨੀ ਰਿਕਾਰਡ ਡਿਜੀਟਾਈਜ਼ੇਸ਼ਨ ਸਿਸਟਮ। ਪ੍ਰਮਾਣਿਤ ਜਮ੍ਹਾਂਬੰਦੀ ਰਿਕਾਰਡ ਦੇਖੋ।",
     search_placeholder: "ਜ਼ਮੀਨ ਮਾਲਕ ਦਾ ਨਾਮ, ਖਸਰਾ / ਸਰਵੇ ਨੰਬਰ, ਪਿੰਡ ਜਾਂ ਜ਼ਿਲ੍ਹਾ ਖੋਜੋ...",
     search_btn: "ਖੋਜੋ",
@@ -340,7 +340,7 @@ const UI_TRANSLATIONS = {
     legal_disclaimer: "ਕਾਨੂੰਨੀ ਨੋਟਿਸ: ਅਸਲ ਰਜਿਸਟਰਡ ਦਸਤਾਵੇਜ਼ ਹੀ ਕਾਨੂੰਨੀ ਤੌਰ 'ਤੇ ਮੰਨਣਯੋਗ ਹੈ।"
   },
   or: {
-    portal_title: "ଡିଜିଟାଲ ଜମି ରେକର୍ଡ ପୋର୍ଟାଲ",
+    portal_title: "LandLens-AI",
     ministry_sub: "ଗ୍ରାମ୍ୟ ଉନ୍ନୟନ ମନ୍ତ୍ରଣାଳୟ • ଭାରତ ସରକାର",
     search_records: "ରେକର୍ଡ ଖୋଜନ୍ତୁ",
     registration_status: "ପଞ୍ଜୀକରଣ ସ୍ଥିତି",
@@ -348,7 +348,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "ଅଧିକାରୀ କାର୍ଯ୍ୟକ୍ଷେତ୍ର",
     login: "ଅଧିକାରୀ ଲଗଇନ",
     logout: "ଲଗଆଉଟ",
-    hero_headline: "ଡିଜିଟାଲ ଜମି ରେକର୍ଡ ପୋର୍ଟାଲ",
+    hero_headline: "LandLens-AI",
     hero_sub: "AI ଦ୍ୱାରା ବହୁଭାଷୀ ଜମି ରେକର୍ଡ ଡିଜିଟାଇଜେସନ ବ୍ୟବସ୍ଥା। ପ୍ରମାଣିତ ପଟ୍ଟା ଓ ଖତିଆନ ଦେଖନ୍ତୁ।",
     search_placeholder: "ଜମି ମାଲିକଙ୍କ ନାମ, ପ୍ଲଟ / ସର୍ଭେ ନମ୍ବର, ଗ୍ରାମ ଖୋଜନ୍ତୁ...",
     search_btn: "ଖୋଜନ୍ତୁ",
@@ -372,7 +372,7 @@ const UI_TRANSLATIONS = {
     legal_disclaimer: "ଆଇନଗତ ସୂଚନା: ମୂଳ ପଞ୍ଜୀକୃତ ଦଲିଲ ହିଁ ଆଇନଗତ ଭାବେ ଗ୍ରହଣୀୟ।"
   },
   as: {
-    portal_title: "ডিজিটেল ভূমি ৰেকৰ্ড প’ৰ্টেল",
+    portal_title: "LandLens-AI",
     ministry_sub: "গ্ৰামোন্নয়ন মন্ত্ৰালয় • ভাৰত চৰকাৰ",
     search_records: "ৰেকৰ্ড বিচাৰক",
     registration_status: "পঞ্জীয়ন স্থিতি",
@@ -380,7 +380,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "বিষয়া কৰ্মক্ষেত্ৰ",
     login: "বিষয়া প্ৰৱেশ",
     logout: "প্ৰস্থান",
-    hero_headline: "ডিজিটেল ভূমি ৰেকৰ্ড প’ৰ্টেল",
+    hero_headline: "LandLens-AI",
     hero_sub: "AI-চালিত বহুভাষিক ভূমি নথি ডিজিটাইজেচন ব্যৱস্থা। প্ৰমাণিত পট্টা আৰু দাগ নম্বৰ বিচাৰক।",
     search_placeholder: "মাটিৰ গৰাকীৰ নাম, দাগ নম্বৰ, মৌজা বা গাঁও বিচাৰক...",
     search_btn: "বিচাৰক",
@@ -404,7 +404,7 @@ const UI_TRANSLATIONS = {
     legal_disclaimer: "আইনী জাননী: মূল পঞ্জীভুক্ত দলিলহে আইনগতভাৱে গ্ৰহণযোগ্য।"
   },
   ur: {
-    portal_title: "ڈیجیٹل اراضی ریکارڈ پورٹل",
+    portal_title: "LandLens-AI",
     ministry_sub: "وزارت دیہی ترقی • حکومت ہند",
     search_records: "ریکارڈ تلاش کریں",
     registration_status: "رجسٹریشن کی حیثیت",
@@ -412,7 +412,7 @@ const UI_TRANSLATIONS = {
     officer_workspace: "افسر ورک اسپیس",
     login: "افسر لاگ ان",
     logout: "لاگ آؤٹ",
-    hero_headline: "ڈیجیٹل اراضی ریکارڈ پورٹل",
+    hero_headline: "LandLens-AI",
     hero_sub: "AI سے لیس کثیر لسانی اراضی ریکارڈ ڈیجیٹائزیشن۔ تصدیق شدہ کھتونی اور خسرہ ریکارڈ دیکھیں。",
     search_placeholder: "مالک زمین کا نام، خسرہ یا سروے نمبر، موضع یا ضلع تلاش کریں...",
     search_btn: "تلاش کریں",

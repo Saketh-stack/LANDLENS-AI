@@ -71,8 +71,8 @@ const NewRegistrationsPage = () => {
             <span className="text-xs font-bold uppercase tracking-wider text-purple-900 bg-purple-100 px-2.5 py-0.5 rounded-full">
               Sub-Registrar Integration (SRO API)
             </span>
-            <span className="text-xs font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
-              Target: Public Viewing in 2–3 Days
+            <span className="text-xs font-bold text-emerald-900 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300">
+              Automated AI Ingestion
             </span>
           </div>
           <h1 className="text-2xl font-black text-slate-900 mt-2">

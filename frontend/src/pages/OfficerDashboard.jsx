@@ -21,7 +21,7 @@ const DB_GROUND_TRUTH_METRICS = {
     validation_errors: 0,
     new_registrations: 0,
     average_ocr_accuracy: '96.0%',
-    target_processing_time: '2-3 days (Target)'
+    target_processing_time: 'Real-time'
   },
   charts: {
     daily_processing: [
@@ -119,7 +119,7 @@ const OfficerDashboard = () => {
             Land Record Digitization & Validation Overview
           </h1>
           <p className="text-xs text-slate-500">
-            Real-time pipeline monitoring, OCR extraction quality, and proposed 2–3 day public viewing targets.
+            Real-time pipeline monitoring, OCR extraction quality, and officer verification workflows.
           </p>
         </div>
 

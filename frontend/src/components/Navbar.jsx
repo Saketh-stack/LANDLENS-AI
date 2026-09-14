@@ -156,9 +156,7 @@ const Navbar = () => {
               </Link>
 
             </div>
-            <div className="text-slate-400 italic">
-              Proposed Prototype Target: Public Viewing in 2-3 Days
-            </div>
+
           </div>
         </div>
       )}

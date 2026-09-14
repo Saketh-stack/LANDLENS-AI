@@ -142,12 +142,12 @@ def get_public_stats(db: Session = Depends(get_db)):
     ).scalar() or 1
 
     return {
-        "portal_name": "Digital Land Records Portal",
-        "subtitle": "AI-Powered Land Record Digitization and Validation System",
+        "portal_name": "LandLens-AI",
+        "subtitle": "AI-Powered Land Record Digitization and Multi-Document Cross-Verification",
         "department": "Department of Land Resources (DoLR), Ministry of Rural Development",
         "total_digitized_approved": approved_count,
         "districts_covered": districts_count,
         "villages_digitized": villages_count,
-        "average_verification_time_days": "2-3 Days (Prototype Target)",
-        "service_guarantee_notice": "Proposed system target: Verified registration records made available for public viewing within 2-3 days."
+        "average_verification_time_days": "Real-time AI Verification",
+        "service_guarantee_notice": "Verified registration records made available for certified public viewing upon officer approval."
     }

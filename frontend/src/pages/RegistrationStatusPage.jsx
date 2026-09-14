@@ -98,7 +98,7 @@ const RegistrationStatusPage = () => {
         {/* Header */}
         <div className="text-center space-y-2 py-6">
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
-            Target SLA: 2–3 Days Post-Registration
+            Real-Time Status Tracking
           </span>
           <h1 className="text-3xl font-extrabold text-slate-900">
             Registration & Digitization Status Tracker
@@ -170,10 +170,7 @@ const RegistrationStatusPage = () => {
               </div>
             </div>
 
-            {/* Proposed Service SLA target note */}
-            <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl text-xs text-amber-900">
-              <strong>Proposed Prototype Target:</strong> Verified registration records are published to the citizen portal within <strong>2–3 days</strong> after registration, subject to Tahsildar human verification.
-            </div>
+
           </div>
         )}
       </div>

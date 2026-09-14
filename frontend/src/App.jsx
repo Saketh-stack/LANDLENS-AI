@@ -132,12 +132,12 @@ function App() {
             <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <div className="font-bold text-slate-200">
-                  Digital Land Records Portal • SIH26018 Hackathon Prototype
+                  LandLens-AI • SIH26018
                 </div>
                 <div>Department of Land Resources (DoLR), Ministry of Rural Development, Government of India</div>
               </div>
-              <div className="text-center sm:text-right">
-                <span className="text-amber-400 font-medium">Proposed Prototype Target:</span> Public viewing within 2–3 days subject to officer verification.
+              <div className="text-center sm:text-right text-slate-400">
+                Intelligent Multilingual AI/OCR Land Record Digitization Platform
               </div>
             </div>
           </footer>

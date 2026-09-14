@@ -292,13 +292,6 @@ const PublicHomePage = () => {
         </div>
       </div>
 
-      {/* Target Service Notice Banner */}
-      <div className="bg-amber-50 border-y border-amber-200 py-2.5 px-4 text-center text-xs text-amber-900 font-medium">
-        <span className="font-bold uppercase tracking-wider text-amber-950 bg-amber-200 px-2 py-0.5 rounded mr-2">
-          Proposed Service Target
-        </span>
-        Newly registered properties are validated and made available for certified public viewing within <strong>2–3 days</strong> after registration.
-      </div>
 
       {/* Main Results Container */}
       <div className="max-w-7xl mx-auto px-4 py-8">
